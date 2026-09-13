@@ -14,7 +14,11 @@ if (!admin.apps.length) {
     console.log(`[firebase] Conectado al emulador de Firestore en ${process.env.FIRESTORE_EMULATOR_HOST}`);
   } else {
     admin.initializeApp({
-      credential: admin.credential.applicationDefault(),
+      credential: process.env.FIREBASE_SERVICE_ACCOUNT_JSON
+        ? admin.credential.cert(
+          JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON)
+    )
+        : admin.credential.applicationDefault(),
       projectId,
     });
     console.log('[firebase] Conectado a Firestore (credenciales del entorno)');
