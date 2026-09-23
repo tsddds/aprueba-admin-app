@@ -2,6 +2,8 @@
 
 23 de septiembre de 2026. Rama de base: `codex/base-fase2-equipo`. Repositorio: https://github.com/tsddds/aprueba-admin-app . No usar el repositorio académico. Esta entrega prepara el trabajo; no certifica MVP ni Docker funcionando.
 
+Publicación comprobada: commit de paquete `0e199ba`, con actualización documental posterior en la misma rama. Main permanece en `fe94dbf`. No hay que esperar un merge para descargar esta rama. Pruebas repetidas antes de publicar: 3 unitarias y 2 de configuración aprobadas; las 7 smoke corresponden a la comprobación previa fuera de Docker, no a una nueva ejecución con contenedores.
+
 ## 1. Accesos y descarga
 
 El propietario debe invitar a los dos compañeros como colaboradores del repositorio privado si todavía no tienen acceso. Cada uno usa su propia cuenta GitHub. No compartir contraseñas, JSON Firebase, JWT de Vercel ni tokens. El emulador no necesita acceso a Firebase real.

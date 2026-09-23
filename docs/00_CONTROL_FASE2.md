@@ -4,6 +4,8 @@ Actualizado: 23 de septiembre de 2026. Base desde fe94dbf en rama codex/base-fas
 
 ## Estamos aquí
 
+Publicación realizada el 23 de septiembre: paquete `0e199ba` subido a `origin/codex/base-fase2-equipo`. Main conservada en `fe94dbf`; sin merge ni PR. La recepción por compañeros y ejecución Docker siguen PENDIENTES. Guía 07 es la siguiente acción. Las notas inferiores de «sin commit/push» son bitácora histórica de preparación, no estado vigente.
+
 Prioridad vigente: Hito 1 (28 septiembre–03 octubre), MVP con base operativa; Hito 2 (26–31 octubre), proyecto completo en Docker. No esperar Docker completo para revisar/programar endpoints. Alcance mínimo aceptado del MVP y modalidad de demostración aún por confirmar. Fechas de Sprint 1 y capacidad se acuerdan con el equipo, no se inventan. Guía 07 sustituye el requisito histórico de integrar main antes de recibir la base.
 
 Paso 0 de preparación y recepción, antes de iniciar el compromiso de Sprint 1. Archivos creados; smoke con emulador verificado; falta validar Docker con un motor disponible y entregar la base común a los tres. Ningún endpoint se marca completado por generar este paquete.
@@ -18,7 +20,7 @@ Paso 0 de preparación y recepción, antes de iniciar el compromiso de Sprint 1.
 - Visor Firestore: configuración ACTUALIZADA; navegación y precio actualizado por API VERIFICADOS fuera de Docker. Ver guía 06. Docker y monitor Requests pendientes de comprobación.
 - Contrato: tests ACTUALIZADOS y ejecutados, 8 fallos funcionales abiertos. No confundir ejecución del test con cumplimiento del requisito.
 - Build frontend: VERIFICADO como compilación solamente.
-- Publicación de base y reproducción por otro integrante: PENDIENTE.
+- Publicación de base: VERIFICADA por push y referencia remota 0e199ba; reproducción por otro integrante: PENDIENTE.
 - Stripe real de pruebas, medición/reinicio de recursos de desarrollo: PENDIENTE; no implementados.
 
 ## Registro por endpoint
