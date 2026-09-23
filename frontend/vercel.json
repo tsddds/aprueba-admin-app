@@ -1,4 +1,13 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "git": {
+    "deploymentEnabled": {
+      "codex/base-fase2-equipo": false,
+      "equipo-a/**": false,
+      "equipo-b/**": false,
+      "equipo-c/**": false
+    }
+  },
   "rewrites": [
     {
       "source": "/api/:path*",

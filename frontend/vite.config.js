@@ -7,7 +7,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       // Redirige las llamadas del API al backend Express.
-      '/api': { target: 'http://localhost:4000', changeOrigin: true },
+      '/api': { target: process.env.DEV_API_TARGET || 'http://localhost:4000', changeOrigin: true },
     },
   },
 });

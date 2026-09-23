@@ -20,3 +20,9 @@ service-account*.json
 
 # Configuración local de despliegue
 .vercel/
+
+# Estado local del emulador y resultados (nunca exportar a Git datos de usuarios)
+infra/firestore/.firebase/
+infra/firestore/data/
+test-results/
+.local/

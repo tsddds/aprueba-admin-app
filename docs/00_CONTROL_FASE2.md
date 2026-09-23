@@ -1,0 +1,71 @@
+# Control de Fase 2 Aprueba Administración
+
+Actualizado: 23 de septiembre de 2026. Base desde fe94dbf en rama codex/base-fase2-equipo, preparada para publicación autorizada por el usuario en esta fecha, sin merge a main. Confirmar recepción con git ls-remote y guía 07. Fuente funcional: sección 4 del Word original, 27 endpoints, Node.js/Express. Los dos Word nuevos están descartados; Cloud Run no obligatorio. Respuestas de Max incorporadas en guía de datos/aceptación.
+
+## Estamos aquí
+
+Prioridad vigente: Hito 1 (28 septiembre–03 octubre), MVP con base operativa; Hito 2 (26–31 octubre), proyecto completo en Docker. No esperar Docker completo para revisar/programar endpoints. Alcance mínimo aceptado del MVP y modalidad de demostración aún por confirmar. Fechas de Sprint 1 y capacidad se acuerdan con el equipo, no se inventan. Guía 07 sustituye el requisito histórico de integrar main antes de recibir la base.
+
+Paso 0 de preparación y recepción, antes de iniciar el compromiso de Sprint 1. Archivos creados; smoke con emulador verificado; falta validar Docker con un motor disponible y entregar la base común a los tres. Ningún endpoint se marca completado por generar este paquete.
+
+## Estado del paquete
+
+- Reparto y catálogo: ACTUALIZADO; catálogo de 27 rutas únicas validado, puntos A34/B33/C35 y cantidad A10/B10/C7. Asignación inicial A Tsung-Hao, B Catalina, C Felipe.
+- Plan de sprints: ACTUALIZADO; fechas/capacidad todavía PENDIENTE de planificación real.
+- Dockerfiles y Compose: ACTUALIZADO; verificación de build/up BLOQUEADO_POR_INSUMO (motor Docker no disponible), no por falta de requisito de empresa.
+- Fixtures y guardia: VERIFICADO por pruebas unitarias, carga y lectura en emulador. No cargar en nube.
+- Smoke: VERIFICADO 7/7 fuera de Docker (añadida prueba de cambio de precio).
+- Visor Firestore: configuración ACTUALIZADA; navegación y precio actualizado por API VERIFICADOS fuera de Docker. Ver guía 06. Docker y monitor Requests pendientes de comprobación.
+- Contrato: tests ACTUALIZADOS y ejecutados, 8 fallos funcionales abiertos. No confundir ejecución del test con cumplimiento del requisito.
+- Build frontend: VERIFICADO como compilación solamente.
+- Publicación de base y reproducción por otro integrante: PENDIENTE.
+- Stripe real de pruebas, medición/reinicio de recursos de desarrollo: PENDIENTE; no implementados.
+
+## Registro por endpoint
+
+Todos comienzan PENDIENTE de aceptación, aunque exista código. Para cada fila lógica de `endpoints.json`, registrar aquí cuando se tome: ID, responsable, rama, estado, evidencia, siguiente paso. No duplicar métodos/rutas a mano: catálogo es fuente de asignación.
+
+- E01, E12, E13 → A, candidatos Sprint 1, PENDIENTE.
+- E04–E07 → B, candidatos Sprint 1, PENDIENTE.
+- E23–E25 → C, candidatos Sprint 1, PENDIENTE.
+- Restantes E02/E03/E08–E11/E14–E22/E26/E27 → PENDIENTE según secuencia de sprints. Las series anteriores son agrupaciones: consultar catálogo para responsable exacto.
+
+## Pendientes antes de programar en paralelo
+
+- Confirmar recepción de los bloques asignados y capacidad/fechas, no conocimientos supuestos.
+- Publicación solicitada: usar rama compartida, sin modificar main ni repo académico. Recibir el commit publicado y confirmar accesos personales.
+- Verificar Docker en un computador con motor disponible; reproducir README desde una segunda copia/equipo. Esta recepción sigue pendiente, no es motivo para detener lectura de contrato y preparación de tests.
+- Acordar interfaces usuario/suscripción/medallas/pregunta y dueño de archivos compartidos.
+- Elegir rama por tarea pequeña y revisor circular.
+
+## Pendientes que no detienen todo el sprint
+
+- Cuenta Stripe test y acceso privado para E26; sin compartir contraseña personal.
+- Recursos de desarrollo autorizados y mecanismo seguro para E09–E11. Cloud Run no impuesto. No asumir control de contenedores de Vercel.
+- Compatibilidad/diseño de planificación periódica de métricas, actualización parametrizada aún no implementada.
+- Expandir pruebas de aceptación y regresión a todos los criterios del contrato.
+- Remediación de dependencias antes de exposición productiva; no actualizar mayores a ciegas.
+
+## Bitácora
+
+2026-09-23 — Preparador: asistente. Creada copia de trabajo aislada desde remoto comprobado, Docker/Compose, guardias, fixtures, pruebas y guías. Sin cambios funcionales de endpoints; solo HOST opcional de arranque y proxy Vite configurable para contenedores. Carga/pruebas en demo-aprueba-tests, sin usar Firebase real. Tres unitarias y seis smoke aprobadas; ocho pruebas de contrato fallan y se asignan a responsables. Build frontend aprobado. Docker no ejecutado por falta de motor. No publicación ni modificación de Vercel.
+
+Última acción terminada: preparación y verificación local de las partes disponibles. Próxima acción: validar Docker y revisar/publicar base común con autorización; después iniciar S1-A1, S1-B1 y S1-C1 en ramas separadas.
+
+Comprobación final: catálogo contrastado 27/27 contra el Word original; YAML/JSON/sintaxis y enlaces locales revisados. Corregido recuento del seed a 45 documentos. Repetida suite contractual después del ajuste del runner: conserva sus ocho fallos conocidos. Emulador temporal detenido y puertos liberados. Añadida guía 05 para recepción, ramas, revisión y reanudación. No hay commit/push nuevo.
+
+## Plantilla de actualización
+
+Actualización posterior 2026-09-23: petición de interfaz para revisar cambios locales. Habilitada Firebase Emulator Suite UI en 4001, puertos auxiliares solo loopback; tests usan configuración sin visor. Precarga de UI en Dockerfile. Prueba Chrome/Playwright escritorio: login → PUT precio 1000 a 1250 → documento visible con 1250 → GET coincidente. Precio restaurado, procesos temporales detenidos. Sin cambios en servicios remotos ni publicación Git. Avisos app/app-deleted del visor oficial permanecen aunque el flujo funcionó; sin excepciones pageerror. Añadido color a fixtures de planes tras reproducir 500 por color undefined; no se cambió lógica del endpoint. Documentado cómo completar color en un emulador previamente cargado sin sobrescribir datos. 3 unitarias + 2 tests de configuración + 7 smoke aprobados. Ocho fallos contractuales previos no se consideran corregidos. Próximo: instalar/disponer de motor y validar Compose completo, luego publicación autorizada y recepción del equipo.
+
+Fecha:
+Endpoint o tarea:
+Responsable y rama:
+Archivos modificados:
+Estado (PENDIENTE / EN_PROCESO / ACTUALIZADO / VERIFICADO / BLOQUEADO_POR_INSUMO):
+Comprobación ejecutada y resultado real:
+Pendiente o bloqueo:
+Última acción terminada:
+Próxima acción exacta:
+
+No incluir credenciales o datos personales reales. Si no se pudo ejecutar algo, anotar NO_EJECUTADO con causa; no inferir éxito de otro entorno. El asistente también actualiza memoria raíz al cerrar una intervención. No hay seguimiento automático de cambios que el equipo no comparta o que todavía no se hayan inspeccionado.

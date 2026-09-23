@@ -43,6 +43,7 @@ app.use(notFound);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`[aprueba-admin-api] escuchando en http://localhost:${PORT}/api/v1`));
+// HOST permite limitar los tests al loopback; comportamiento previo conservado por defecto.
+app.listen(PORT, process.env.HOST || '0.0.0.0', () => console.log(`[aprueba-admin-api] escuchando en http://localhost:${PORT}/api/v1`));
 
 export default app;
