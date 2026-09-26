@@ -4,6 +4,10 @@ Actualizado: 23 de septiembre de 2026. Base desde fe94dbf en rama codex/base-fas
 
 ## Estamos aquí
 
+Seguimiento de recepción Docker: primer build/up del usuario creó 45 documentos; backend y Firestore saludables. Frontend falló EACCES al escribir configuración temporal Vite. Este commit incluye la corrección en frontend/Dockerfile.dev: chown de /app a node conservando USER node; reconstruido solo frontend con --no-deps, sin reiniciar seed/base/backend. Navegador Chrome1440x1000: login local200 → resumen con datos ficticios → logout aprobado; métricas/services200 vía proxy, sin pageerror/overlay, dos advertencias futuras React Router. Frontend sigue en ejecución. Publicación solicitada en codex/base-fase2-equipo, sin merge a main. Persistencia stop/up, recarga y suites completas Docker siguen pendientes. Registro detallado en memoria raíz sección43.
+
+Para quienes ya descargaron la rama: con cambios propios guardados y estando en codex/base-fase2-equipo, ejecutar `git pull --ff-only` y `docker compose --profile ui up --build -d --no-deps frontend`. Quienes aún no iniciaron el entorno usan el arranque completo del README. No borrar volúmenes. Si trabajan en su propia rama de endpoint, incorporar la base actualizada de forma coordinada; no sobrescribir su trabajo.
+
 Publicación realizada el 23 de septiembre: paquete `0e199ba` subido a `origin/codex/base-fase2-equipo`. Main conservada en `fe94dbf`; sin merge ni PR. La recepción por compañeros y ejecución Docker siguen PENDIENTES. Guía 07 es la siguiente acción. Las notas inferiores de «sin commit/push» son bitácora histórica de preparación, no estado vigente.
 
 Prioridad vigente: Hito 1 (28 septiembre–03 octubre), MVP con base operativa; Hito 2 (26–31 octubre), proyecto completo en Docker. No esperar Docker completo para revisar/programar endpoints. Alcance mínimo aceptado del MVP y modalidad de demostración aún por confirmar. Fechas de Sprint 1 y capacidad se acuerdan con el equipo, no se inventan. Guía 07 sustituye el requisito histórico de integrar main antes de recibir la base.

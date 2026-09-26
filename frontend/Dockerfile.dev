@@ -4,6 +4,9 @@ COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund
 COPY index.html vite.config.js ./
 COPY src ./src
+# Vite escribe la configuración temporal en /app y su caché en node_modules.
+# Conservar ejecución sin privilegios, pero permitir esas escrituras locales.
+RUN chown -R node:node /app
 USER node
 EXPOSE 5173
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
