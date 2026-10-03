@@ -1,5 +1,7 @@
 # Seguimiento de ejecución de Fase 2
 
+**Publicación 03/10/2026:** los seis Excel están incluidos en la rama `equipo-a/backend-sprints`, implementación `07f0f86`. Sus celdas de publicación pendiente son una fotografía del corte29/09, no el estado actual de GitHub. Se conservan sin retrofechar ni alterar pruebas/revisiones. La publicación no implica aceptación o cierre de sprint.
+
 Corte: 29/09/2026, bloque A de Tsung-Hao. Estos son archivos de ejecución nuevos derivados de las plantillas V3; los originales académicos, V2 y V3 permanecen intactos. No sustituir rúbricas docentes ni copiar sus notas predeterminadas.
 
 1. **01_Seguimiento_Tsung_Hao_Fase2.xlsx**: punto de entrada. Diez endpoints, pruebas reales, correspondencia con indicadores de rúbrica y pendientes. Columnas amarillas para revisión humana, inicialmente pendiente. Fórmulas de aceptación condicionadas a esa revisión, sin autoaprobarla.

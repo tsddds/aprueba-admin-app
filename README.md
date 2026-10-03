@@ -18,6 +18,8 @@ Conservamos JavaScript, Node.js y Express, Firestore y frontend React/Vite. Alca
 
 ## Estado real
 
+**Publicación confirmada — 03/10/2026:** el incremento A está disponible en `origin/equipo-a/backend-sprints`, commit de implementación `07f0f86`. Código, pruebas, laboratorio y seis Excel publicados; sin merge a main ni despliegue manual. Consultar [recepción y revisión de esta rama](docs/10_RECEPCION_BLOQUE_A.md). El corte técnico/Excel del 29/09 siguiente es histórico: sus menciones a publicación pendiente quedan superadas por esta confirmación; pruebas, revisiones y limitaciones conservan su estado.
+
 Actualización local del 29/09/2026: bloque A implementado en `equipo-a/backend-sprints` desde `c0bd41f`, sin publicación nueva. Diez endpoints de Tsung-Hao, con 23 pruebas de integración A y 5 unitarias aprobadas en Docker. Regresión smoke: 7/7 tanto con operación configurada como sin ella. Suite contractual completa: 1/8 aprobada, 7 defectos B/C pendientes. Esto no acredita aceptación del MVP ni cierre de sprints grupales.
 
 Leer [guía del bloque A y laboratorio Docker](docs/09_GUIA_BLOQUE_A.md), [evidencias y pendientes](docs/08_PLAN_Y_EVIDENCIAS_EQUIPO_A.md) y [seis Excel de ejecución](docs/seguimiento/README.md). La base compartida remota sigue siendo `codex/base-fase2-equipo`; estos cambios nuevos solo están en la copia local hasta revisión/publicación autorizada.

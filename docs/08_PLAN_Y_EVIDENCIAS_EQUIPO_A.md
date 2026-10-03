@@ -1,5 +1,7 @@
 # Desarrollo del bloque A
 
+Actualización de publicación 03/10/2026: implementación `07f0f86` subida a `origin/equipo-a/backend-sprints` y referencia remota comprobada. Las menciones a publicación pendiente más abajo describen el corte original del29/09. No cambia el estado de revisión/aceptación ni la fecha de las pruebas. Ver guía10.
+
 Responsable del bloque: Tsung-Hao Liu Hsiao. Preparación de código y pruebas asistida por IA a petición del responsable. Revisión humana, comprensión y demostración siguen pendientes hasta registrarse realmente. Corte: 29 de septiembre de 2026. Rama local `equipo-a/backend-sprints`, base `c0bd41f`.
 
 ## Plan de ejecución

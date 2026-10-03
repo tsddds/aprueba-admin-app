@@ -1,5 +1,7 @@
 # Guía del bloque A — Tsung-Hao
 
+Publicada el03/10/2026 en `equipo-a/backend-sprints`, implementación `07f0f86`. Los compañeros ya pueden recibir la rama según guía10. Los resultados técnicos siguientes corresponden al corte original del29/09; no son nuevas pruebas del03/10.
+
 Fecha: 29/09/2026. Rama local `equipo-a/backend-sprints`, desde `c0bd41f`.
 Alcance: E01 y E08–E16 del contrato original; JavaScript/Node/Express y Firestore. Preparación asistida por IA. Esta guía no sustituye comprensión, revisión del equipo ni aceptación docente.
 

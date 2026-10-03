@@ -1,5 +1,9 @@
 # Control de Fase 2 Aprueba Administración
 
+## Publicación vigente — 03/10/2026
+
+Incremento A publicado y verificado en `origin/equipo-a/backend-sprints`, commit de implementación `07f0f86ab14c43f40c2060de980c3f07d72b1b95`. Base compartida sigue c0bd41f; main sigue fe94dbf. No PR, merge ni despliegue manual. Ver guía10 para revisión. Las notas inferiores y los Excel mantienen su corte de pruebas del29/09: publicación ya realizada, revisión humana y aceptación aún pendientes. Hoy no se repitieron suites runtime ni se verificó el panel de Vercel.
+
 ## Estado vigente — 29 de septiembre de 2026
 
 La copia local está en `equipo-a/backend-sprints`, base `c0bd41f`. Bloque A de Tsung-Hao: E01, E08–E16 implementados y comprobados localmente, con la salvedad de que E09 tiene una sonda de laboratorio, no cinco servicios empresariales configurados. Código y pruebas preparados con asistencia IA; revisión humana y demostración pendientes. No hay commit/push nuevo, merge, PR ni despliegue.
