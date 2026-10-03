@@ -1,33 +1,14 @@
 import { Router } from 'express';
-import { ok, fail } from '../lib/envelope.js';
-import { wrap } from '../middleware/error.js';
+import { ok } from '../lib/envelope.js';
 import { requireRole } from '../middleware/auth.js';
-import { COL, listAll, getDoc, patchDoc } from '../data/repo.js';
-
-const r = Router();
-
-// GET /admin/platforms (ops/admin)
-r.get('/platforms', requireRole('ops'), wrap(async (_req, res) => {
-  return ok(res, await listAll(COL.platforms));
-}));
-
-// GET /admin/services (ops/admin)
-r.get('/services', requireRole('ops'), wrap(async (_req, res) => {
-  return ok(res, await listAll(COL.services));
-}));
-
-// GET /admin/containers (ops/admin)
-r.get('/containers', requireRole('ops'), wrap(async (_req, res) => {
-  return ok(res, await listAll(COL.containers));
-}));
-
-// POST /admin/containers/:name/restart (ops/admin)
-r.post('/containers/:name/restart', requireRole('ops'), wrap(async (req, res) => {
-  const doc = await getDoc(COL.containers, req.params.name);
-  if (!doc) return fail(res, 404, 'NOT_FOUND', 'Contenedor no encontrado');
-  // Acción operativa simulada: marca como reiniciándose.
-  await patchDoc(COL.containers, req.params.name, { state: 'ok', cpu: 5, mem: 12 });
-  return ok(res, { name: req.params.name, action: 'restart', status: 'scheduled' }, 202);
-}));
-
+import { COL,listAll } from '../data/repo.js';
+import { adminRoute,identifier,pick } from '../lib/admin-validation.js';
+import { services,containers,restart } from '../data/admin-ops.js';
+const r=Router();
+r.get('/platforms',requireRole('ops'),adminRoute(async(_req,res)=>
+  ok(res,(await listAll(COL.platforms)).map(p=>pick(p,['platform','version','available','downloads','updatedAt','source'])))));
+r.get('/services',requireRole('ops'),adminRoute(async(_req,res)=>ok(res,await services())));
+r.get('/containers',requireRole('ops'),adminRoute(async(_req,res)=>ok(res,await containers())));
+r.post('/containers/:name/restart',requireRole('ops'),adminRoute(async(req,res)=>
+  ok(res,await restart(identifier(req.params.name,'name'),req.user),202)));
 export default r;

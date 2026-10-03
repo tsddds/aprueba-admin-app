@@ -21,9 +21,15 @@ test('Las 26 operaciones protegidas rechazan solicitudes sin token', async () =>
 });
 test('Lecturas de fixtures están disponibles con admin', async () => {
   const token = await login();
-  for (const path of ['/users', '/tickets', '/questions', '/corrections', '/sponsors', '/plans', '/features', '/platforms', '/services', '/containers']) {
+  for (const path of ['/users', '/tickets', '/questions', '/corrections', '/sponsors', '/plans', '/features', '/platforms']) {
     const r = await request('GET', `/api/v1/admin${path}`, { token });
     assert.equal(r.status, 200, path); assert.ok(r.json.data.length > 0, path);
+  }
+  for (const [path, configured] of [['/services', process.env.OPS_SERVICES_JSON], ['/containers', process.env.OPS_BRIDGE_URL]]) {
+    const r = await request('GET', `/api/v1/admin${path}`, { token });
+    assert.equal(r.status, configured ? 200 : 503, path);
+    if (configured) assert.ok(r.json.data.length > 0, path);
+    else assert.equal(r.json.data, null, 'Sin observaciones reales no presentar fixtures como servicio operativo');
   }
 });
 test('Escritura y lectura de un sponsor en la base de tests', async () => {

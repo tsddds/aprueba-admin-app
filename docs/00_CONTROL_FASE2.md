@@ -1,5 +1,24 @@
 # Control de Fase 2 Aprueba Administración
 
+## Estado vigente — 29 de septiembre de 2026
+
+La copia local está en `equipo-a/backend-sprints`, base `c0bd41f`. Bloque A de Tsung-Hao: E01, E08–E16 implementados y comprobados localmente, con la salvedad de que E09 tiene una sonda de laboratorio, no cinco servicios empresariales configurados. Código y pruebas preparados con asistencia IA; revisión humana y demostración pendientes. No hay commit/push nuevo, merge, PR ni despliegue.
+
+- S1 A: E01/E12/E13, 8/8 pruebas de integración.
+- S2 A: E14–E16, 7/7, transacciones, concurrencia y auditoría incluidas.
+- S3–S5 A: E08–E11, 8/8; medición HTTP real, recursos Docker reales y cambio real de StartedAt al reiniciar el contenedor dedicado autorizado.
+- Unitarias: 5/5. Smoke base: 7/7. Smoke con laboratorio: 7/7.
+- Contrato general: 1/8 aprobada; quedan 7 fallos de E02, E04, E05, E18, E20, E25 y E27. No se borraron ni saltaron las pruebas.
+- Evidencia: `evidencias/equipo-a/resultados.json` y TAP individuales. Son 50 ejecuciones, 43 aprobaciones y 7 fallos; incluye repetición de smoke en dos configuraciones, no 50 casos únicos ni cobertura de líneas.
+- Seguimiento: seis Excel en `seguimiento/`, copias de ejecución Fase 2; originales V3/V2 y documentos académicos intactos.
+- Firebase remoto, Vercel y Corestream sin modificaciones. Pruebas aisladas en `demo-aprueba-tests`; desarrollo en `demo-aprueba-equipo`.
+
+Siguiente acción: Tsung-Hao reproduce y explica S1; Felipe revisa A (incluidos auth/errores compartidos); acordar capacidad/fechas y alcance del Hito 1. Solicitar publicación de la rama si se desea compartir este incremento. Ver guías 08 y 09. Recepción en segundo computador, servicios de negocio, integración B/C y aceptación docente siguen pendientes.
+
+## Registro histórico de preparación y recepción
+
+Las notas siguientes describen comprobaciones anteriores. Las menciones a motor ausente, ocho fallos o simulación operativa no son el estado vigente de esta rama A.
+
 Actualizado: 23 de septiembre de 2026. Base desde fe94dbf en rama codex/base-fase2-equipo, preparada para publicación autorizada por el usuario en esta fecha, sin merge a main. Confirmar recepción con git ls-remote y guía 07. Fuente funcional: sección 4 del Word original, 27 endpoints, Node.js/Express. Los dos Word nuevos están descartados; Cloud Run no obligatorio. Respuestas de Max incorporadas en guía de datos/aceptación.
 
 ## Estamos aquí

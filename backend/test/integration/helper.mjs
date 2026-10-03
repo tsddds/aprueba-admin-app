@@ -8,7 +8,7 @@ export async function request(method, path, { token, body } = {}) {
     ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(body ? { 'Content-Type': 'application/json' } : {}),
   }, ...(body ? { body: JSON.stringify(body) } : {}) });
   const text = await response.text();
-  return { status: response.status, json: text ? JSON.parse(text) : null };
+  return { status: response.status, headers: response.headers, json: text ? JSON.parse(text) : null };
 }
 export async function login(role = 'admin') {
   const r = await request('POST', '/api/v1/admin/auth/login', { body: { email: `${role}@example.test`, password: DEMO_PASSWORD } });

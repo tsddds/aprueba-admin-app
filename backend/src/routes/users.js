@@ -1,47 +1,39 @@
 import { Router } from 'express';
 import { ok, fail } from '../lib/envelope.js';
-import { wrap } from '../middleware/error.js';
 import { requireRole } from '../middleware/auth.js';
-import { COL, listAll, getDoc, patchDoc } from '../data/repo.js';
-
+import { COL, listAll, getDoc } from '../data/repo.js';
+import { adminRoute, identifier, invalid, enumeration, email, bodyObject, text } from '../lib/admin-validation.js';
+import { paginate } from '../lib/admin-pagination.js';
+import { userSummary, userDetail, updateUser } from '../data/admin-support.js';
 const r = Router();
-
-// GET /admin/users (admin/support) — búsqueda + paginación por cursor simple
-r.get('/users', requireRole('support'), wrap(async (req, res) => {
-  const { q, plan, state, limit = 20, cursor } = req.query;
-  let rows = await listAll(COL.users, 'name');
-  if (q) {
-    const needle = String(q).toLowerCase();
-    rows = rows.filter((u) => u.name?.toLowerCase().includes(needle) || u.email?.toLowerCase().includes(needle));
+r.get('/users', requireRole('support'), adminRoute(async (req,res) => {
+  const query = req.query;
+  if (query.q !== undefined && (typeof query.q !== 'string' || query.q.length > 200)) invalid('q');
+  if (query.state !== undefined) enumeration(query.state, 'state', ['active','suspended','churned']);
+  if (query.plan !== undefined) enumeration(query.plan, 'plan', ['free','uni','all']);
+  let users = (await listAll(COL.users)).map(userSummary);
+  if (query.q?.trim()) {
+    const q = query.q.trim().toLowerCase();
+    users = users.filter(u => [u.name,u.email].some(s => typeof s === 'string' && s.toLowerCase().includes(q)));
   }
-  if (plan) rows = rows.filter((u) => u.plan === plan);
-  if (state) rows = rows.filter((u) => u.state === state);
-  const total = rows.length;
-  const start = cursor ? Number(Buffer.from(String(cursor), 'base64').toString('utf8')) || 0 : 0;
-  const lim = Math.min(Number(limit) || 20, 100);
-  const page = rows.slice(start, start + lim);
-  const next = start + lim < total ? Buffer.from(String(start + lim)).toString('base64') : null;
-  return ok(res, page, 200, { pagination: { total, nextCursor: next } });
+  if (query.state) users = users.filter(u => u.state === query.state);
+  if (query.plan) users = users.filter(u => u.plan === query.plan);
+  const {items,pagination} = paginate(users, query, { fields:['name','email','createdAt','lastActivity','id'], defaultSort:'name', filterKeys:['q','state','plan'] });
+  return ok(res, items, 200, {pagination});
 }));
-
-// GET /admin/users/:id (admin/support)
-r.get('/users/:id', requireRole('support'), wrap(async (req, res) => {
-  const u = await getDoc(COL.users, req.params.id);
-  if (!u) return fail(res, 404, 'NOT_FOUND', 'Usuario no encontrado');
-  return ok(res, u);
+r.get('/users/:id', requireRole('support'), adminRoute(async (req,res) => {
+  const user = await getDoc(COL.users, identifier(req.params.id));
+  if (!user) return fail(res,404,'NOT_FOUND','Usuario no encontrado');
+  return ok(res, await userDetail(user));
 }));
-
-// PATCH /admin/users/:id (admin/support) — suspender/reactivar/cambiar correo/plan
-r.patch('/users/:id', requireRole('support'), wrap(async (req, res) => {
-  const allowed = ['state', 'email', 'plan'];
-  const patch = {};
-  for (const k of allowed) if (k in (req.body || {})) patch[k] = req.body[k];
-  if (req.body?.reason) patch.lastActionReason = req.body.reason;
-  patch.auditedBy = req.user.id;
-  patch.auditedAt = new Date().toISOString();
-  const u = await patchDoc(COL.users, req.params.id, patch);
-  if (!u) return fail(res, 404, 'NOT_FOUND', 'Usuario no encontrado');
-  return ok(res, u);
+r.patch('/users/:id', requireRole('support'), adminRoute(async (req,res) => {
+  const id = identifier(req.params.id), input = bodyObject(req.body, ['state','email','plan','reason']), patch = {};
+  if ('state' in input) patch.state = enumeration(input.state,'state',['active','suspended']);
+  if ('email' in input) patch.email = email(input.email);
+  if ('plan' in input) patch.plan = identifier(input.plan,'plan');
+  if (!Object.keys(patch).length) invalid(null,'Debe indicar un cambio de estado, correo o plan');
+  const reason = input.reason === undefined ? undefined : text(input.reason,'reason',2000);
+  const user = await updateUser(id,patch,reason,req.user);
+  return ok(res,userSummary(user));
 }));
-
 export default r;

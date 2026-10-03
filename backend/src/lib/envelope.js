@@ -13,6 +13,6 @@ export function created(res, data, extraMeta = {}) {
 export function noContent(res) {
   return res.status(204).end();
 }
-export function fail(res, status, code, message, details = undefined) {
-  return res.status(status).json({ data: null, error: { code, message, ...(details ? { details } : {}) }, meta: meta() });
+export function fail(res, status, code, message, details = [], field = null) {
+  return res.status(status).json({ data: null, error: { code, message, details, field }, meta: meta() });
 }

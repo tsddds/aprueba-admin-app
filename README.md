@@ -18,7 +18,11 @@ Conservamos JavaScript, Node.js y Express, Firestore y frontend React/Vite. Alca
 
 ## Estado real
 
-Preparación del 23 de septiembre de 2026 desde commit `fe94dbf`, para compartir en `codex/base-fase2-equipo` sin integrar en main. No certifica funciones de negocio terminadas. Las pruebas de contrato dejan visibles incumplimientos del código base. Dockerfiles y Compose preparados; arranque Docker pendiente de verificar con motor Docker. Consultar guía 07 antes de empezar.
+Actualización local del 29/09/2026: bloque A implementado en `equipo-a/backend-sprints` desde `c0bd41f`, sin publicación nueva. Diez endpoints de Tsung-Hao, con 23 pruebas de integración A y 5 unitarias aprobadas en Docker. Regresión smoke: 7/7 tanto con operación configurada como sin ella. Suite contractual completa: 1/8 aprobada, 7 defectos B/C pendientes. Esto no acredita aceptación del MVP ni cierre de sprints grupales.
+
+Leer [guía del bloque A y laboratorio Docker](docs/09_GUIA_BLOQUE_A.md), [evidencias y pendientes](docs/08_PLAN_Y_EVIDENCIAS_EQUIPO_A.md) y [seis Excel de ejecución](docs/seguimiento/README.md). La base compartida remota sigue siendo `codex/base-fase2-equipo`; estos cambios nuevos solo están en la copia local hasta revisión/publicación autorizada.
+
+Sin `compose.ops.yaml`, E09–E11 no inventan estados: informan indisponibilidad o contenedor no autorizado. El laboratorio optativo permite consultar y reiniciar realmente **solo** `aprueba-ops-lab`. No usar ese laboratorio en producción.
 
 ## Herramientas de cada integrante
 

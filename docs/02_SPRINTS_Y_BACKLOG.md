@@ -1,10 +1,12 @@
 # Plan de inicio y sprints de Fase 2
 
-Punto actual: preparación del entorno y planificación de Sprint 1. El asistente preparó entorno/fixtures/tests iniciales, no completó los endpoints por el equipo. No registrar esto como sprints terminados, pruebas de aceptación aprobadas o trabajo individual ya realizado.
+Punto actual al 29/09/2026: implementación local del bloque A preparada con asistencia IA, siguiendo el orden funcional S1–S5. E01/E12/E13, E14–E16 y E08–E11 cuentan con pruebas locales; E09 aún necesita destinos de servicios de negocio. Ver guías 08/09 y Excel `seguimiento/`. B/C no fueron implementados en esta intervención. No registrar esto como cinco sprints grupales terminados, ceremonias realizadas, aceptación docente ni demostración personal.
 
 Se conservan los cinco sprints del plan de 18 semanas. Esta secuencia detalla dependencias, no sustituye automáticamente las fechas de la Carta Gantt. Antes de iniciar, registrar fechas reales y disponibilidad de los tres; no traducir puntos a horas sin experiencia del equipo.
 
 ## Paso 0 entrega de la base común
+
+Nota de vigencia: el motor Docker y las pruebas A ya están comprobados en este computador. Las limitaciones de motor mencionadas en el registro de preparación siguiente son históricas. Reproducción por los compañeros y compromiso de fechas/capacidad siguen pendientes.
 
 Actualización de prioridad del 23 de septiembre: Hito 1, MVP con base operativa del 28 septiembre al 03 octubre; Hito 2, Docker completo del 26 al 31 octubre. Son hitos comunicados, no fechas inventadas para los cinco sprints. Recibir la rama según guía 07 sin esperar merge a main. La verificación Docker queda pendiente de motor, pero lectura, diseño de tests y programación pueden comenzar. No considerar MVP aceptado sin confirmar funciones mínimas y modalidad de demostración.
 

@@ -68,10 +68,20 @@ Los snapshots traen deltas iniciales 0 y una serie mínima para compatibilidad v
 
 A: cursor inválido, último elemento de página, correo duplicado, usuario inexistente, roles prohibidos, servicio timeout/degradado y orquestador inaccesible. B: importación mixta, duplicados, pregunta inválida, dos recorrecciones concurrentes y baja de sponsor con beneficios. C: sin actividad, frontera 30 días, eventos repetidos, suscripción cancelada/expirada, precio 0, fallo de Stripe, reintento y plan sin suscriptores.
 
-Estas pruebas aún no están todas implementadas. El paquete contiene base segura, smoke y ocho detectores iniciales; cada integrante amplía las pruebas del código que escribe.
+Actualización 29/09/2026: los casos del bloque A indicados arriba están implementados y ejecutados en Docker; ver pruebas `a-sprint1`, `a-sprint2`, `a-ops` y sus reportes. Los demás bloques conservan pendientes; siete detectores contractuales siguen fallando.
 
 ## No confundir los fixtures con la entrega final
 
 Max permite datos de negocio/plataformas ficticios persistidos, pero exige consultas/reinicios reales en desarrollo. El fixture container-demo no es un contenedor real de infraestructura: el código inicial solo modifica su documento. No presentar ese botón como reinicio implementado. El seed tampoco crea cuenta Stripe ni procesa pagos; payments son entradas de ejemplo.
 
-Cloud Run no obligatorio. Antes de operaciones reales debe elegirse recurso autorizado y mecanismo de acceso seguro. No montar Docker socket en Express ni publicar motor Docker para resolverlo rápidamente.
+Cloud Run no obligatorio. Decisión confirmada del usuario: Docker local y contenedor dedicado. Esta rama reemplaza la simulación de E09–E11 por sondas reales y un bridge restringido al laboratorio `aprueba-ops-lab`. No monta Docker socket en Express ni publica el motor. El bridge es privilegiado: leer advertencias y apagado en guía09. Los antiguos documentos de fixtures de servicios/contenedores no son fuente de estado operativo de estas rutas.
+
+## Persistencia añadida por el bloque A
+
+- `adminAudit/{id}`: documento por cambio efectivo de usuario/ticket y por solicitud de reinicio. Actor, entidad, fecha ISO y cambios antes/después; ticket referencia `replyId`. Reinicios distinguen requested/scheduled/verified/unknown/rejected. No guarda JWT, contraseñas ni secretos TOTP. Es append-only para eventos de usuario/ticket; la auditoría operativa actualiza el estado de una misma solicitud. No existe endpoint para borrar auditorías.
+- `adminLocks/user-email`: bloqueo compartido de unicidad transaccional, leído antes que el usuario para mantener orden consistente y evitar interbloqueos. Normalización trim/minúsculas. La lectura de colección también detecta correos históricos no normalizados. Otros escritores de usuarios deben respetar la misma política; no se afirma unicidad global ante escrituras manuales que la eludan.
+- `tickets/{ticketId}/replies/{id}`: historial de respuestas con autor y fecha; `lastReply` se conserva en ticket por compatibilidad, no reemplaza el historial.
+- `serviceObservations/{key}`: total de sondas, exitosas, primera/última fecha y latencia. Huella SHA-256 de URL separa series al cambiar destino; no almacena la URL con secretos. La configuración de sondas viene del servidor, no de parámetros de un usuario de la API.
+- `adminUsers/{id}`: TOTP opcional mediante `mfaEnabled`, `mfaSecret` y `mfaLastCounter`. Secretos no retornados por API. En producción debe definirse custodia/provisión segura; el seed mantiene MFA apagado y solo los tests habilitan una semilla de RFC de prueba.
+
+E13 consulta `subscriptions` por `userId`, priorizando activa y fin de periodo reciente, con fallback al objeto legado si no hay documentos. La salida usa proyecciones permitidas, incluidas medallas/dispositivos/actividad, para no filtrar secretos. E14 no modifica suscripciones ni medallas: un cambio de `plan` administrativo no ejecuta cobro ni sincronización Stripe. Coordinar cualquier cambio de esta semántica con Felipe.
