@@ -2,8 +2,9 @@ import { Router } from 'express';
 import { ok, created, noContent, fail } from '../lib/envelope.js';
 import { wrap } from '../middleware/error.js';
 import { requireRole } from '../middleware/auth.js';
-import { adminRoute, bodyObject, text, enumeration, invalid } from '../lib/admin-validation.js';
-import { COL, listAll, addDoc, patchDoc, deleteDoc, getDoc } from '../data/repo.js';
+import { adminRoute, bodyObject, text, enumeration, invalid, identifier } from '../lib/admin-validation.js';
+import { COL, listAll, addDoc, deleteDoc, getDoc } from '../data/repo.js';
+import { updateSponsor } from '../data/sponsors.js';
 
 const r = Router();
 const TIERS = ['Bronze', 'Silver', 'Gold'];
@@ -78,11 +79,24 @@ r.post('/sponsors', requireRole('admin'), adminRoute(async (req, res) => {
   return created(res, doc);
 }));
 
-r.patch('/sponsors/:id', requireRole('finance'), wrap(async (req, res) => {
+r.patch('/sponsors/:id', requireRole('admin'), adminRoute(async (req, res) => {
+  const id = identifier(req.params.id);
   const allowed = ['name', 'tier', 'monthlyFee', 'status', 'benefitsOffered'];
+  const input = bodyObject(req.body, allowed);
+  if (!Object.keys(input).length) invalid(null, 'Debe indicar al menos un campo para actualizar');
   const patch = {};
-  for (const k of allowed) if (k in (req.body || {})) patch[k] = req.body[k];
-  const doc = await patchDoc(COL.sponsors, req.params.id, patch);
+  if ('name' in input) patch.name = text(input.name, 'name');
+  if ('tier' in input) patch.tier = enumeration(input.tier, 'tier', TIERS);
+  if ('status' in input) patch.status = enumeration(input.status, 'status', ['ok', 'deg', 'down']);
+  if ('monthlyFee' in input) {
+    if (typeof input.monthlyFee !== 'number' || !Number.isFinite(input.monthlyFee) || input.monthlyFee < 0) invalid('monthlyFee');
+    patch.monthlyFee = input.monthlyFee;
+  }
+  if ('benefitsOffered' in input) {
+    if (!Number.isSafeInteger(input.benefitsOffered) || input.benefitsOffered < 0) invalid('benefitsOffered');
+    patch.benefitsOffered = input.benefitsOffered;
+  }
+  const doc = await updateSponsor(id, patch);
   if (!doc) return fail(res, 404, 'NOT_FOUND', 'Sponsor no encontrado');
   return ok(res, doc);
 }));

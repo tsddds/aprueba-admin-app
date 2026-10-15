@@ -37,7 +37,7 @@ export default function Sponsors({ ctx }) {
   const save = (form, sponsor) => {
     if (!form.name.trim()) { t.err(L('required_field')); return; }
     const fee = Number(form.monthlyFee);
-    if (!sponsor && (form.monthlyFee === '' || !Number.isFinite(fee) || fee < 0)) {
+    if (form.monthlyFee === '' || !Number.isFinite(fee) || fee < 0) {
       t.err(L('s_invalid_fee')); return;
     }
     if (!sponsor && form.benefits.some(b => !b.name.trim() ||
@@ -47,13 +47,17 @@ export default function Sponsors({ ctx }) {
       t.err(L('s_invalid_benefit')); return;
     }
     if (sponsor) {
+      const offered = Number(form.benefitsOffered);
+      if (form.benefitsOffered === '' || !Number.isSafeInteger(offered) || offered < 0) {
+        t.err(L('s_invalid_offered')); return;
+      }
       // PATCH acepta el total de beneficios, no el listado.
       run(() => api.patch(`/sponsors/${sponsor.id}`, {
         name: form.name.trim(),
         tier: form.tier,
         monthlyFee: fee,
         status: form.status,
-        benefitsOffered: Number(form.benefitsOffered || 0),
+        benefitsOffered: offered,
       }), L('saved_ok'));
     } else {
       // POST deriva benefitsOffered de la longitud del array `benefits`.
@@ -177,7 +181,7 @@ function SponsorForm({ sponsor, ctx, busy, onClose, onSave }) {
               <Select value={f.status} onChange={set('status')} options={STATUSES.map((x) => ({ value: x, label: L(`st_${x}`) }))} />
             </Field>
             <Field label={L('s_offered_num')} hint={L('s_offered_hint')}>
-              <input type="number" min="0" value={f.benefitsOffered} onChange={(e) => set('benefitsOffered')(e.target.value)} />
+              <input type="number" min="0" step="1" value={f.benefitsOffered} onChange={(e) => set('benefitsOffered')(e.target.value)} />
             </Field>
           </>
         ) : (

@@ -26,6 +26,7 @@ export const T = {
     s_add_benefit:'Agregar beneficio', s_remove_benefit:'Quitar beneficio',
     s_invalid_fee:'Indica un aporte mensual válido, desde cero.', s_invalid_benefit:'Completa el nombre, costo y stock de cada beneficio. Costo y stock deben ser enteros desde cero.',
     s_offered_num:'N.º de beneficios ofrecidos', s_offered_hint:'El API de edición solo acepta el total, no el listado.',
+    s_invalid_offered:'Indica un número entero de beneficios ofrecidos, desde cero.',
     s_delete_title:'Eliminar sponsor', s_delete_msg:'Se eliminará «{name}» y su aporte dejará de contarse en la recaudación. Esta acción no se puede deshacer.',
 
     // ── operativa ──
@@ -153,6 +154,7 @@ export const T = {
     s_add_benefit:'Add benefit', s_remove_benefit:'Remove benefit',
     s_invalid_fee:'Enter a valid monthly fee of zero or more.', s_invalid_benefit:'Complete each benefit name, cost and stock. Cost and stock must be nonnegative integers.',
     s_offered_num:'Number of benefits offered', s_offered_hint:'The edit endpoint only accepts the total, not the list.',
+    s_invalid_offered:'Enter a whole number of benefits offered, zero or more.',
     s_delete_title:'Delete sponsor', s_delete_msg:'“{name}” will be removed and its fee will stop counting toward revenue. This cannot be undone.',
 
     o_stores:'Store availability', o_platform:'Platform', o_version:'Version', o_available:'Downloadable', o_dl:'Downloads', o_updated:'Updated', yes:'Yes', no:'No',
