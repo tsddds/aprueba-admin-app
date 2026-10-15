@@ -10,7 +10,7 @@ export function parseQuestionImport(text, selectedTest = '') {
     testId = testId || source.testId;
     items = source.items;
   } else throw new Error('q_import_invalid');
-  if (typeof testId !== 'string' || !['lectora', 'm1', 'm2', 'cien', 'hist'].includes(testId)) throw new Error('q_import_test_required');
+  if (typeof testId !== 'string' || !['lectora', 'm1', 'm2', 'cien', 'hist', 'b1'].includes(testId)) throw new Error('q_import_test_required');
   if (!items.length || items.length > 100) throw new Error('q_import_limit');
   return { testId, items };
 }

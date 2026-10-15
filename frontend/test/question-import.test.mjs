@@ -22,3 +22,8 @@ test('Importación detecta JSON inválido, prueba ausente y límites del lote', 
   assert.throws(() => parseQuestionImport('[]', 'm1'), /q_import_limit/);
   assert.throws(() => parseQuestionImport(JSON.stringify(Array.from({ length: 101 }, () => ({}))), 'm1'), /q_import_limit/);
 });
+
+
+test('Importación conserva el código b1 de Biología de las preguntas originales', () => {
+  assert.deepEqual(parseQuestionImport(JSON.stringify({ testId: 'b1', items: [{ pregunta: 'Biología' }] })), { testId: 'b1', items: [{ pregunta: 'Biología' }] });
+});

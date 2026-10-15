@@ -185,3 +185,20 @@ test('E21: no publica datos heredados incoherentes aunque el cambio recibido sea
     assert.deepEqual((await ref.get()).data(), legacy);
   }, legacy);
 });
+
+
+test('E21: permite revisar la pregunta original de Biología b1 sin cambiar su prueba', async () => {
+  const token = await login();
+  const legacy = { ...initial, testId: 'b1', axis: 'Célula', statement: '¿Cuál es la unidad básica de la vida?', options: ['Átomo', 'Célula', 'Tejido', 'Órgano', 'Molécula'], correctAnswer: 'B', explanation: 'La célula es la unidad estructural y funcional.', status: 'published' };
+  await withQuestion(async ref => {
+    const patch = { ...legacy, explanation: 'La célula constituye la unidad básica de la vida.' };
+    delete patch.sourceRef;
+    const result = await request('PUT', path + '/' + ref.id, { token, body: patch });
+    assert.equal(result.status, 200);
+    assert.deepEqual((await ref.get()).data(), { ...legacy, ...patch });
+    const filtered = await request('GET', path + '?testId=b1', { token });
+    assert.equal(filtered.status, 200);
+    assert.ok(filtered.json.data.some(q => q.id === ref.id));
+    assert.ok(filtered.json.meta.filters.testIds.includes('b1'));
+  }, legacy);
+});

@@ -33,6 +33,7 @@ async function raw(method, path, body, retry = true) {
     }
     const err = new Error(json.error?.message || 'Error');
     err.code = json.error?.code; err.status = res.status;
+    err.field = json.error?.field;
     throw err;
   }
   return json;

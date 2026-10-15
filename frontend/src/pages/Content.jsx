@@ -84,7 +84,12 @@ export default function Content({ ctx }) {
       if (okMsg) t.ok(okMsg);
       await load(filters, page);
       return out;
-    } catch (e) { t.err(e.message); return null; } finally { setBusy(false); }
+    } catch (e) {
+      const fieldLabels = { testId: 'q_test', axis: 'q_axis', difficulty: 'q_difficulty', statement: 'q_statement', options: 'q_options', correctAnswer: 'q_correct', status: 'q_status' };
+      const field = e.field?.split('.')[0];
+      t.err(e.field ? e.message + ': ' + (fieldLabels[field] ? L(fieldLabels[field]) : e.field) : e.message);
+      return null;
+    } finally { setBusy(false); }
   };
 
   const save = (f, question) => {

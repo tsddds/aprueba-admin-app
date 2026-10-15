@@ -1,6 +1,7 @@
 import { AdminError, bodyObject, enumeration, invalid, text } from './admin-validation.js';
 
-export const QUESTION_TESTS = ['lectora', 'm1', 'm2', 'cien', 'hist'];
+// b1 es el código de Biología utilizado por las preguntas originales.
+export const QUESTION_TESTS = ['lectora', 'm1', 'm2', 'cien', 'hist', 'b1'];
 export const QUESTION_DIFFICULTIES = ['d1', 'd2', 'd3', 'd4'];
 export const QUESTION_STATUSES = ['draft', 'published', 'flagged', 'retired'];
 export const QUESTION_FIELDS = ['testId', 'axis', 'difficulty', 'statement', 'options', 'correctAnswer', 'explanation', 'requiredSkill'];
