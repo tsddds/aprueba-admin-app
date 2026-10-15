@@ -6,7 +6,7 @@ import { seed } from './seed.mjs';
 
 const target = assertEmulatorOnly(process.env, { testOnly: true });
 const mode = process.argv[2];
-if (!['smoke', 'contract', 'a-sprint1', 'a-sprint2', 'a-ops', 'b-sponsors', 'b-sponsors-create', 'b-sponsors-update', 'b-sponsors-delete'].includes(mode)) throw new Error('Modo de pruebas no permitido.');
+if (!['smoke', 'contract', 'a-sprint1', 'a-sprint2', 'a-ops', 'b-sponsors', 'b-sponsors-create', 'b-sponsors-update', 'b-sponsors-delete', 'b-questions-list'].includes(mode)) throw new Error('Modo de pruebas no permitido.');
 // Nunca ejecuta pruebas con escritura contra la aplicación publicada ni base de compañeros.
 const serverPort = await new Promise((resolve, reject) => {
   const s = createServer(); s.on('error', reject);

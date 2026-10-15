@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { api, qs } from '../api/client.js';
+import { loadAllQuestions } from '../api/questions.js';
 import { useAuth } from '../auth/AuthContext.jsx';
 import {
   Kpi, Card, Loading, ErrorBox, EmptyState, Modal, Field, FormGrid, Select,
@@ -88,8 +89,8 @@ export default function Users({ ctx }) {
   // El enunciado de la pregunta recorregida vive en /questions (rol gerencia).
   useEffect(() => {
     if (tab !== 'corrections' || !isAdmin || questionsById) return;
-    api.get('/questions')
-      .then((r) => setQuestionsById(Object.fromEntries(r.data.map((q) => [q.id, q]))))
+    loadAllQuestions()
+      .then((questions) => setQuestionsById(Object.fromEntries(questions.map((q) => [q.id, q]))))
       .catch(() => setQuestionsById({}));
   }, [tab, isAdmin, questionsById]);
 

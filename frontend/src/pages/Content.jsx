@@ -1,14 +1,15 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { api, qs } from '../api/client.js';
 import {
   Kpi, Card, Loading, ErrorBox, EmptyState, Modal, Field, FormGrid, Select,
-  Toast, useToast, Pill,
+  Toast, useToast, Pill, Pager,
 } from '../components/ui.jsx';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
-const DIFFICULTIES = ['d1', 'd2', 'd3', 'd4', 'd5'];
-const STATUSES = ['draft', 'published', 'archived'];
-const STATUS_TAG = { draft: ['w', 'qs_draft'], published: ['g', 'qs_published'], archived: ['', 'qs_archived'] };
+const DIFFICULTIES = ['d1', 'd2', 'd3', 'd4'];
+const STATUSES = ['draft', 'published', 'flagged', 'retired'];
+const STATUS_TAG = { draft: ['w', 'qs_draft'], published: ['g', 'qs_published'], flagged: ['w', 'qs_flagged'], retired: ['', 'qs_retired'] };
+const PAGE_SIZE = 20;
 
 const emptyQuestion = () => ({
   testId: '', axis: '', difficulty: 'd1',
@@ -34,34 +35,43 @@ export default function Content({ ctx }) {
   const [filters, setFilters] = useState({ testId: '', axis: '', difficulty: '', status: '' });
   const [dialog, setDialog] = useState(null); // {kind:'form'|'import', question?}
   const [busy, setBusy] = useState(false);
+  const [page, setPage] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [hasNext, setHasNext] = useState(false);
+  const [summary, setSummary] = useState({ published: 0, draft: 0, tests: 0 });
+  const requestVersion = useRef(0);
   const seen = useRef({ tests: new Set(), axes: new Set() });
 
-  const load = useCallback(async (f) => {
+  const load = useCallback(async (f, p = 0) => {
+    const version = ++requestVersion.current;
     setErr(null);
+    setRows(null);
     try {
-      const r = await api.get(`/questions${qs(f)}`);
+      const r = await api.get(`/questions${qs({ ...f, limit: PAGE_SIZE, page: p + 1 })}`);
+      if (version !== requestVersion.current) return;
       setRows(r.data);
+      setTotal(r.meta.pagination.total);
+      setHasNext(Boolean(r.meta.pagination.nextCursor));
+      setSummary(r.meta.summary);
+      seen.current = {
+        tests: new Set(r.meta.filters.testIds), axes: new Set(r.meta.filters.axes),
+      };
       r.data.forEach((q) => {
         if (q.testId) seen.current.tests.add(q.testId);
         if (q.axis) seen.current.axes.add(q.axis);
       });
-    } catch (e) { setErr(e.message); }
+    } catch (e) { if (version === requestVersion.current) setErr(e.message); }
   }, []);
 
-  useEffect(() => { load(filters); }, [filters, load]);
+  useEffect(() => {
+    load(filters, page);
+    return () => { requestVersion.current++; };
+  }, [filters, page, load]);
 
-  const setF = (k, v) => setFilters((f) => ({ ...f, [k]: v }));
+  const setF = (k, v) => { setPage(0); setFilters((f) => ({ ...f, [k]: v })); };
   const opts = (set) => [...set].sort().map((v) => ({ value: v, label: v }));
 
-  const kpis = useMemo(() => {
-    const list = rows || [];
-    return {
-      total: list.length,
-      published: list.filter((q) => q.status === 'published').length,
-      draft: list.filter((q) => (q.status || 'draft') === 'draft').length,
-      tests: new Set(list.map((q) => q.testId).filter(Boolean)).size,
-    };
-  }, [rows]);
+  const kpis = { total, ...summary };
 
   const run = async (fn, okMsg) => {
     setBusy(true);
@@ -69,7 +79,7 @@ export default function Content({ ctx }) {
       const out = await fn();
       setDialog(null);
       if (okMsg) t.ok(okMsg);
-      await load(filters);
+      await load(filters, page);
       return out;
     } catch (e) { t.err(e.message); return null; } finally { setBusy(false); }
   };
@@ -90,7 +100,7 @@ export default function Content({ ctx }) {
     else run(() => api.post('/questions', base), L('q_created'));
   };
 
-  if (err && !rows) return <Card><ErrorBox msg={err} onRetry={() => load(filters)} L={L} /></Card>;
+  if (err && !rows) return <Card><ErrorBox msg={err} onRetry={() => load(filters, page)} L={L} /></Card>;
   if (!rows) return <Loading L={L} />;
 
   return (
@@ -122,7 +132,7 @@ export default function Content({ ctx }) {
             placeholder={`${L('q_difficulty')}: ${L('filter_all')}`} />
           <Select value={filters.status} onChange={(v) => setF('status', v)} options={STATUSES.map((s) => ({ value: s, label: L(STATUS_TAG[s][1]) }))}
             placeholder={`${L('q_status')}: ${L('filter_all')}`} />
-          <button className="btn sec sm" onClick={() => setFilters({ testId: '', axis: '', difficulty: '', status: '' })}>{L('clear_filters')}</button>
+          <button className="btn sec sm" onClick={() => { setPage(0); setFilters({ testId: '', axis: '', difficulty: '', status: '' }); }}>{L('clear_filters')}</button>
         </div>
 
         {rows.length === 0 ? <EmptyState msg={L('q_no_questions')} ic="📚" /> : (
@@ -149,7 +159,9 @@ export default function Content({ ctx }) {
             ))}</tbody>
           </table></div>
         )}
-        {err && <ErrorBox msg={err} onRetry={() => load(filters)} L={L} />}
+        <Pager page={page} shown={Math.min(page * PAGE_SIZE + rows.length, total)} total={total} hasNext={hasNext}
+          onNext={() => { if (hasNext) setPage(p => p + 1); }} onPrev={() => setPage(p => Math.max(0, p - 1))} L={L} />
+        {err && <ErrorBox msg={err} onRetry={() => load(filters, page)} L={L} />}
       </Card>
 
       {dialog?.kind === 'form' && (

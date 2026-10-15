@@ -3,17 +3,36 @@ import { ok, created, fail } from '../lib/envelope.js';
 import { wrap } from '../middleware/error.js';
 import { requireRole } from '../middleware/auth.js';
 import { COL, listAll, addDoc, patchDoc, getDoc } from '../data/repo.js';
+import { adminRoute, text, enumeration, invalid } from '../lib/admin-validation.js';
+import { paginate } from '../lib/admin-pagination.js';
 
 const r = Router();
 
-r.get('/questions', requireRole('admin'), wrap(async (req, res) => {
-  let rows = await listAll(COL.questions);
-  const { testId, axis, difficulty, status } = req.query;
-  if (testId) rows = rows.filter((q) => q.testId === testId);
-  if (axis) rows = rows.filter((q) => q.axis === axis);
-  if (difficulty) rows = rows.filter((q) => q.difficulty === difficulty);
-  if (status) rows = rows.filter((q) => q.status === status);
-  return ok(res, rows, 200, { pagination: { total: rows.length } });
+r.get('/questions', requireRole('admin'), adminRoute(async (req, res) => {
+  const filterKeys = ['testId', 'axis', 'difficulty', 'status'];
+  const query = { ...req.query };
+  const tests = ['lectora', 'm1', 'm2', 'cien', 'hist'];
+  for (const key of Object.keys(query)) {
+    if (![...filterKeys, 'limit', 'page', 'cursor', 'sort'].includes(key)) invalid(key);
+  }
+  if (query.testId !== undefined) enumeration(query.testId, 'testId', tests);
+  if (query.axis !== undefined) query.axis = text(query.axis, 'axis');
+  if (query.difficulty !== undefined) enumeration(query.difficulty, 'difficulty', ['d1', 'd2', 'd3', 'd4']);
+  if (query.status !== undefined) enumeration(query.status, 'status', ['draft', 'published', 'flagged', 'retired']);
+  const all = await listAll(COL.questions);
+  const rows = all.filter(question => filterKeys.every(key => query[key] === undefined || question[key] === query[key]));
+  const summary = {
+    published: rows.filter(q => q.status === 'published').length,
+    draft: rows.filter(q => q.status === 'draft').length,
+    tests: new Set(rows.map(q => q.testId).filter(Boolean)).size,
+  };
+  const { items, pagination } = paginate(rows, query, {
+    fields: ['id', 'testId', 'axis', 'difficulty', 'status', 'statement'], filterKeys,
+  });
+  return ok(res, items, 200, {
+    pagination, summary,
+    filters: { testIds: tests, axes: [...new Set(all.map(q => q.axis).filter(value => typeof value === 'string' && value.trim()))].sort() },
+  });
 }));
 
 r.post('/questions', requireRole('admin'), wrap(async (req, res) => {
