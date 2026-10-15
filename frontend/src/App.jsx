@@ -19,7 +19,7 @@ import Plans from './pages/Plans.jsx';
 export const VIEWS = [
   { id: 'resumen', path: '/', ic: '📊', group: 1, roles: ['admin', 'finance', 'ops', 'support'], el: Overview },
   { id: 'comercial', path: '/comercial', ic: '💰', group: 1, roles: ['finance'], el: Commercial },
-  { id: 'sponsors', path: '/sponsors', ic: '🤝', group: 1, roles: ['finance'], el: Sponsors },
+  { id: 'sponsors', path: '/sponsors', ic: '🤝', group: 1, roles: ['admin'], el: Sponsors },
   { id: 'operativa', path: '/operativa', ic: '🛠️', group: 2, roles: ['ops'], el: Operations },
   { id: 'usuarios', path: '/usuarios', ic: '👥', group: 2, roles: ['support'], el: Users },
   { id: 'tutores', path: '/tutores', ic: '🎓', group: 2, roles: ['support'], el: Tutors },
