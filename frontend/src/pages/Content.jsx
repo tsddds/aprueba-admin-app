@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api, qs } from '../api/client.js';
+import { questionOptions } from '../api/question-options.js';
+import QuestionExplanation from '../components/QuestionExplanation.jsx';
 import {
   Kpi, Card, Loading, ErrorBox, EmptyState, Modal, Field, FormGrid, Select,
   Toast, useToast, Pill, Pager,
 } from '../components/ui.jsx';
 
-const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
+const LETTERS = ['A', 'B', 'C', 'D', 'E'];
 const DIFFICULTIES = ['d1', 'd2', 'd3', 'd4'];
 const STATUSES = ['draft', 'published', 'flagged', 'retired'];
 const STATUS_TAG = { draft: ['w', 'qs_draft'], published: ['g', 'qs_published'], flagged: ['w', 'qs_flagged'], retired: ['', 'qs_retired'] };
@@ -86,10 +88,10 @@ export default function Content({ ctx }) {
 
   const save = (f, question) => {
     if (!f.statement.trim()) { t.err(L('q_err_statement')); return; }
-    const options = f.options.map((o) => o.trim()).filter(Boolean);
-    if (options.length < 2) { t.err(L('q_err_options')); return; }
-    // Si la correcta apuntaba a una alternativa que quedó vacía, se reajusta.
-    const correctAnswer = LETTERS.indexOf(f.correctAnswer) < options.length ? f.correctAnswer : 'A';
+    let options;
+    try { options = questionOptions(f.options, f.correctAnswer); }
+    catch (e) { t.err(L(e.message)); return; }
+    const correctAnswer = f.correctAnswer;
     const base = {
       testId: f.testId.trim() || null, axis: f.axis.trim() || null, difficulty: f.difficulty,
       statement: f.statement.trim(), options, correctAnswer,
@@ -204,12 +206,12 @@ function QuestionForm({ question, ctx, busy, tests, axes, onClose, onSave }) {
         <button className="btn" onClick={() => onSave(f, question)} disabled={busy}>{busy ? '…' : (question ? L('save') : L('create'))}</button>
       </>}>
       <FormGrid>
-        <Field label={L('q_test')} hint={tests.length ? tests.join(' · ') : undefined}>
+        <Field label={`${L('q_test')} *`} hint={tests.length ? tests.join(' · ') : undefined}>
           <input value={f.testId} onChange={onText('testId')} list="q-tests" placeholder="m1" />
           <datalist id="q-tests">{tests.map((x) => <option key={x} value={x} />)}</datalist>
         </Field>
-        <Field label={L('q_axis')}>
-          <input value={f.axis} onChange={onText('axis')} list="q-axes" placeholder="Álgebra" />
+        <Field label={`${L('q_axis')} *`}>
+          <input maxLength={200} value={f.axis} onChange={onText('axis')} list="q-axes" placeholder="Álgebra" />
           <datalist id="q-axes">{axes.map((x) => <option key={x} value={x} />)}</datalist>
         </Field>
         <Field label={L('q_difficulty')}>
@@ -220,7 +222,7 @@ function QuestionForm({ question, ctx, busy, tests, axes, onClose, onSave }) {
             options={STATUSES.map((s) => ({ value: s, label: L(STATUS_TAG[s][1]) }))} />
         </Field>
         <Field wide label={`${L('q_statement')} *`}>
-          <textarea value={f.statement} onChange={onText('statement')} />
+          <textarea maxLength={20000} value={f.statement} onChange={onText('statement')} />
         </Field>
       </FormGrid>
 
@@ -229,13 +231,13 @@ function QuestionForm({ question, ctx, busy, tests, axes, onClose, onSave }) {
       {f.options.map((o, i) => (
         <div key={i} className={`opt-row ${f.correctAnswer === LETTERS[i] ? 'correct' : ''}`}>
           <button type="button" className="k" title={L('q_correct')} onClick={() => set('correctAnswer')(LETTERS[i])}>{LETTERS[i]}</button>
-          <input value={o} onChange={(e) => setOption(i, e.target.value)} />
+          <input maxLength={5000} value={o} onChange={(e) => setOption(i, e.target.value)} />
         </div>
       ))}
 
       <FormGrid>
-        <Field wide label={L('q_explanation')}><textarea value={f.explanation} onChange={onText('explanation')} /></Field>
-        <Field wide label={L('q_skill')}><input value={f.requiredSkill} onChange={onText('requiredSkill')} /></Field>
+        <QuestionExplanation value={f.explanation} onChange={set('explanation')} L={L} busy={busy} />
+        <Field wide label={`${L('q_skill')} *`}><input maxLength={2000} value={f.requiredSkill} onChange={onText('requiredSkill')} /></Field>
       </FormGrid>
     </Modal>
   );
