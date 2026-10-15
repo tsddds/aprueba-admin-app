@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api, qs } from '../api/client.js';
-import { loadAllQuestions } from '../api/questions.js';
+import QuestionExplanation from '../components/QuestionExplanation.jsx';
 import { useAuth } from '../auth/AuthContext.jsx';
 import {
   Kpi, Card, Loading, ErrorBox, EmptyState, Modal, Field, FormGrid, Select,
@@ -46,10 +46,14 @@ export default function Users({ ctx }) {
   const [cFilters, setCFilters] = useState({ state: '' });
   const [corrections, setCorrections] = useState(null);
   const [cErr, setCErr] = useState(null);
+  const [cPage, setCPage] = useState(0);
+  const [cTotal, setCTotal] = useState(0);
+  const [cNext, setCNext] = useState(false);
+  const [pendingCor, setPendingCor] = useState(0);
+  const correctionVersion = useRef(0);
 
   // ── catálogos auxiliares ──
   const [plans, setPlans] = useState(null);
-  const [questionsById, setQuestionsById] = useState(null);
 
   const planOptions = (plans || FALLBACK_PLANS).map((p) => ({ value: p.id, label: p.name }));
   const planName = (id) => (plans || FALLBACK_PLANS).find((p) => p.id === id)?.name || id || L('none');
@@ -69,9 +73,18 @@ export default function Users({ ctx }) {
     try { setTickets((await api.get(`/tickets${qs(f)}`)).data); } catch (e) { setTErr(e.message); }
   }, []);
 
-  const loadCorrections = useCallback(async (f) => {
+  const loadCorrections = useCallback(async (f, p = 0) => {
+    const version = ++correctionVersion.current;
     setCErr(null);
-    try { setCorrections((await api.get(`/corrections${qs(f)}`)).data); } catch (e) { setCErr(e.message); }
+    setCorrections(null);
+    try {
+      const result = await api.get(`/corrections${qs({ ...f, limit: PAGE_SIZE, page: p + 1 })}`);
+      if (version !== correctionVersion.current) return;
+      setCorrections(result.data);
+      setCTotal(result.meta.pagination.total);
+      setCNext(Boolean(result.meta.pagination.nextCursor));
+      setPendingCor(result.meta.summary.pending);
+    } catch (e) { if (version === correctionVersion.current) setCErr(e.message); }
   }, []);
 
   // El catálogo de planes solo lo puede leer gerencia; si falla, se usa el fallback.
@@ -80,19 +93,15 @@ export default function Users({ ctx }) {
   // Cada bloque recarga cuando cambian sus filtros (la primera ejecución hace la carga inicial).
   useEffect(() => { setCursors([null]); setPage(0); loadUsers(uFilters, null); }, [uFilters, loadUsers]);
   useEffect(() => { loadTickets(tFilters); }, [tFilters, loadTickets]);
-  useEffect(() => { loadCorrections(cFilters); }, [cFilters, loadCorrections]);
+  useEffect(() => {
+    loadCorrections(cFilters, cPage);
+    return () => { correctionVersion.current++; };
+  }, [cFilters, cPage, loadCorrections]);
   useEffect(() => {
     const id = setTimeout(() => setUFilters((f) => (f.q === search ? f : { ...f, q: search })), 300);
     return () => clearTimeout(id);
   }, [search]);
 
-  // El enunciado de la pregunta recorregida vive en /questions (rol gerencia).
-  useEffect(() => {
-    if (tab !== 'corrections' || !isAdmin || questionsById) return;
-    loadAllQuestions()
-      .then((questions) => setQuestionsById(Object.fromEntries(questions.map((q) => [q.id, q]))))
-      .catch(() => setQuestionsById({}));
-  }, [tab, isAdmin, questionsById]);
 
   const goNext = () => {
     if (!uNext) return;
@@ -107,7 +116,6 @@ export default function Users({ ctx }) {
   };
 
   const openTickets = (tickets || []).filter((x) => x.state !== 'closed').length;
-  const pendingCor = (corrections || []).filter((x) => (x.state || 'pending') === 'pending').length;
 
   const kpis = useMemo(() => {
     const list = users || [];
@@ -140,7 +148,8 @@ export default function Users({ ctx }) {
     if (!out) return;
     const reward = out.data?.rewardGranted;
     t.ok(reward ? L('co_reward_granted', { n: reward.amount ?? CONFIRM_REWARD }) : L('co_rejected'));
-    loadCorrections(cFilters);
+    setCPage(0);
+    loadCorrections(cFilters, 0);
     // Confirmar acredita badges al alumno: refrescamos también la tabla de usuarios.
     if (reward) loadUsers(uFilters, cursors[page]);
   };
@@ -254,27 +263,27 @@ export default function Users({ ctx }) {
         <Card>
           <div className="filters" style={{ marginBottom: 12 }}>
             <b style={{ marginRight: 'auto' }}>{L('co_table')}</b>
-            <Select value={cFilters.state} onChange={(v) => setCFilters({ state: v })}
+            <Select value={cFilters.state} onChange={(v) => { setCPage(0); setCFilters({ state: v }); }}
               options={Object.keys(COR_TAG).map((s) => ({ value: s, label: L(COR_TAG[s][1]) }))} placeholder={`${L('t_state')}: ${L('filter_all')}`} />
-            <button className="btn sec sm" onClick={() => setCFilters({ state: '' })}>{L('clear_filters')}</button>
+            <button className="btn sec sm" onClick={() => { setCPage(0); setCFilters({ state: '' }); }}>{L('clear_filters')}</button>
           </div>
-          {!isAdmin && <p className="note" style={{ marginBottom: 10 }}>ℹ️ {L('co_needs_admin')}</p>}
-          {cErr && <ErrorBox msg={cErr} onRetry={() => loadCorrections(cFilters)} L={L} />}
-          {!corrections ? <Loading L={L} /> : corrections.length === 0 ? <EmptyState msg={L('co_no_items')} ic="⚑" /> : (
+          {cErr && <ErrorBox msg={cErr} onRetry={() => loadCorrections(cFilters, cPage)} L={L} />}
+          {!corrections ? (!cErr && <Loading L={L} />) : corrections.length === 0 ? <EmptyState msg={L('co_no_items')} ic="⚑" /> : (
             <div className="tbl-wrap"><table>
               <thead><tr>
                 <th>{L('co_question')}</th><th>{L('co_user')}</th><th>{L('co_reason')}</th>
                 <th>{L('co_comment')}</th><th>{L('t_state')}</th><th>{L('co_created')}</th><th />
               </tr></thead>
               <tbody>{corrections.map((c) => {
-                const q = questionsById?.[c.questionId];
+                const q = c.question;
                 return (
                   <tr key={c.id}>
                     <td>
-                      <b className="clamp" style={{ fontSize: 13 }}>{q?.statement || c.questionId}</b>
-                      <div className="note">{c.questionId}</div>
+                      <b className="clamp" style={{ fontSize: 13 }}>{q?.statement || (typeof c.questionId === 'string' ? c.questionId : L('none'))}</b>
+                      <div className="note">{typeof c.questionId === 'string' ? c.questionId : L('none')}</div>
                     </td>
-                    <td>{c.userId}</td>
+                    <td><b>{c.user?.name || (typeof c.userId === 'string' ? c.userId : L('none'))}</b>
+                      {c.user && <div className="note">{c.user.id}</div>}</td>
                     <td><span className="tag">{L(`reason_${c.reason}`)}</span></td>
                     <td><span className="note clamp">{c.comment}</span></td>
                     <td><Pill value={c.state || 'pending'} map={COR_TAG} L={L} /></td>
@@ -290,6 +299,8 @@ export default function Users({ ctx }) {
               })}</tbody>
             </table></div>
           )}
+          {corrections && <Pager page={cPage} shown={Math.min(cPage * PAGE_SIZE + corrections.length, cTotal)} total={cTotal} hasNext={cNext}
+            onNext={() => { if (cNext) setCPage(p => p + 1); }} onPrev={() => setCPage(p => Math.max(0, p - 1))} L={L} />}
         </Card>
       )}
 
@@ -306,7 +317,7 @@ export default function Users({ ctx }) {
 
       {dialog?.kind === 'correction' && (
         <CorrectionDialog correction={dialog.correction} question={dialog.question} ctx={ctx} busy={busy}
-          isAdmin={isAdmin} onClose={() => setDialog(null)}
+          onClose={() => setDialog(null)}
           onResolve={(body) => resolveCorrection(dialog.correction, body)} />
       )}
 
@@ -448,7 +459,7 @@ function TicketDialog({ ticket, ctx, busy, me, onClose, onSave }) {
   );
 }
 
-function CorrectionDialog({ correction, question, ctx, busy, isAdmin, onClose, onResolve }) {
+function CorrectionDialog({ correction, question, ctx, busy, onClose, onResolve }) {
   const { L } = ctx;
   const [resolution, setResolution] = useState('confirmed');
   const [fix, setFix] = useState(false);
@@ -495,7 +506,7 @@ function CorrectionDialog({ correction, question, ctx, busy, isAdmin, onClose, o
           </div>
         </>
       )}
-      {!question && !isAdmin && <p className="note" style={{ marginTop: 10 }}>ℹ️ {L('co_needs_admin')}</p>}
+      {!question && <p className="note" style={{ marginTop: 10 }}>ℹ️ {L('co_question_missing')}</p>}
 
       <div className="section-label">{L('co_resolution')}</div>
       <div className="chips">
@@ -518,7 +529,7 @@ function CorrectionDialog({ correction, question, ctx, busy, isAdmin, onClose, o
             <FormGrid>
               <Field wide label={L('q_statement')}><textarea value={statement} onChange={(e) => setStatement(e.target.value)} /></Field>
               <Field label={L('q_correct')}><input value={correctAnswer} maxLength={1} onChange={(e) => setCorrectAnswer(e.target.value)} /></Field>
-              <Field wide label={L('q_explanation')}><textarea value={explanation} onChange={(e) => setExplanation(e.target.value)} /></Field>
+              <QuestionExplanation value={explanation} onChange={setExplanation} L={L} busy={busy} />
             </FormGrid>
           )}
         </>
