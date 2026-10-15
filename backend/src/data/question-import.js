@@ -17,7 +17,7 @@ async function writeImportedQuestion(question, existingId) {
       }
     }
     const ref = db.collection(COL.questions).doc();
-    transaction.create(ref, { ...question, status: 'published' });
+    transaction.create(ref, { ...question, status: 'draft' });
     transaction.set(indexRef, { questionId: ref.id });
     return { id: ref.id, imported: true };
   });

@@ -26,13 +26,16 @@ export function validateExplanation(value) {
   return result;
 }
 
+// Una clasificación pendiente se conserva como null; los valores inválidos se rechazan.
+const missingClassification = value => value == null || (typeof value === 'string' && !value.trim());
+
 // Esquema completo compartible con la edición/importación, sin escribir datos.
-export function validateQuestion(value) {
+export function validateQuestion(value, { allowMissingClassification = false } = {}) {
   const input = bodyObject(value, QUESTION_FIELDS);
   const result = {
     testId: enumeration(input.testId, 'testId', QUESTION_TESTS),
-    axis: text(input.axis, 'axis'),
-    difficulty: enumeration(input.difficulty, 'difficulty', QUESTION_DIFFICULTIES),
+    axis: allowMissingClassification && missingClassification(input.axis) ? null : text(input.axis, 'axis'),
+    difficulty: allowMissingClassification && missingClassification(input.difficulty) ? null : enumeration(input.difficulty, 'difficulty', QUESTION_DIFFICULTIES),
     statement: text(input.statement, 'statement', 20000),
   };
   if (!Array.isArray(input.options) || input.options.length < 2 || input.options.length > 5) invalid('options');

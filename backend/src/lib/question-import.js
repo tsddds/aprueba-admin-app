@@ -27,7 +27,7 @@ function normalizeItem(item, testId) {
     testId, statement: item.pregunta, options: item.alternativas, correctAnswer: item.respuesta_correcta,
     explanation: item.explicacion_respuesta, requiredSkill: item.habilidad_requerida,
     axis: item.eje ?? item.axis, difficulty: item.dificultad ?? item.difficulty,
-  });
+  }, { allowMissingClassification: true });
 }
 
 // Cada fila es independiente; la escritura y su clave se confirman juntas.

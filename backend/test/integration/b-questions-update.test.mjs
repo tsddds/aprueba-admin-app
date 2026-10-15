@@ -138,7 +138,7 @@ test('E21: rechaza vacíos, valores inválidos, campos ajenos y explanation inco
   await withQuestion(async ref => {
     const before = await snapshot();
     const bodies = [null, [], 'texto', {},
-      ...['testId', 'axis', 'difficulty', 'statement', 'requiredSkill'].flatMap(key => ['', null, false, 1, [], {}].map(value => ({ [key]: value }))),
+      ...['testId', 'axis', 'difficulty', 'statement', 'requiredSkill'].flatMap(key => (['axis', 'difficulty'].includes(key) ? [false, 1, [], {}] : ['', null, false, 1, [], {}]).map(value => ({ [key]: value }))),
       { testId: 'otro' }, { difficulty: 'd5' },
       ...['archived', '', null, [], 3].map(status => ({ status })),
       ...[null, [], ['solo'], ['1', '2', '3', '4', '5', '6'], ['a', '']].map(options => ({ options })),

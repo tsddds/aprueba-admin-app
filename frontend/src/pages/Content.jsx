@@ -21,7 +21,7 @@ const emptyQuestion = () => ({
 });
 
 const formFrom = (q) => ({
-  testId: q.testId || '', axis: q.axis || '', difficulty: q.difficulty || 'd1',
+  testId: q.testId || '', axis: q.axis || '', difficulty: q.difficulty || '',
   statement: q.statement || '',
   options: editableOptions(q.options),
   correctAnswer: q.correctAnswer || 'A',
@@ -94,7 +94,7 @@ export default function Content({ ctx }) {
     catch (e) { t.err(L(e.message)); return; }
     const correctAnswer = f.correctAnswer;
     const base = {
-      testId: f.testId.trim() || null, axis: f.axis.trim() || null, difficulty: f.difficulty,
+      testId: f.testId.trim() || null, axis: f.axis.trim() || null, difficulty: f.difficulty || null,
       statement: f.statement.trim(), options, correctAnswer,
       explanation: f.explanation, requiredSkill: f.requiredSkill,
     };
@@ -217,7 +217,7 @@ function QuestionForm({ question, ctx, busy, tests, axes, onClose, onSave }) {
           <datalist id="q-axes">{axes.map((x) => <option key={x} value={x} />)}</datalist>
         </Field>
         <Field label={L('q_difficulty')}>
-          <Select value={f.difficulty} onChange={set('difficulty')} options={DIFFICULTIES.map((d) => ({ value: d, label: d.toUpperCase() }))} />
+          <Select value={f.difficulty} onChange={set('difficulty')} placeholder={L('none')} options={DIFFICULTIES.map((d) => ({ value: d, label: d.toUpperCase() }))} />
         </Field>
         <Field label={L('q_status')} hint={question ? undefined : L('q_draft_hint')}>
           <Select value={f.status} onChange={set('status')} disabled={!question}
