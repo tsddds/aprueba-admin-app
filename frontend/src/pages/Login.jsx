@@ -4,9 +4,9 @@ import { useAuth } from '../auth/AuthContext.jsx';
 export default function Login({ ctx }) {
   const { L, lang, setLang } = ctx;
   const { login } = useAuth();
-  const [email, setEmail] = useState('admin@aprueba.cl');
-  const [password, setPassword] = useState('admin123');
-  const [otp, setOtp] = useState('123456');
+  const [email, setEmail] = useState('admin@example.test');
+  const [password, setPassword] = useState('SoloEmulador_2026_Prueba!');
+  const [otp, setOtp] = useState('');
   const [err, setErr] = useState(null);
   const [busy, setBusy] = useState(false);
 
