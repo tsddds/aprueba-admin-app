@@ -27,7 +27,8 @@ export const T = {
     s_invalid_fee:'Indica un aporte mensual válido, desde cero.', s_invalid_benefit:'Completa el nombre, costo y stock de cada beneficio. Costo y stock deben ser enteros desde cero.',
     s_offered_num:'N.º de beneficios ofrecidos', s_offered_hint:'El API de edición solo acepta el total, no el listado.',
     s_invalid_offered:'Indica un número entero de beneficios ofrecidos, desde cero.',
-    s_delete_title:'Eliminar sponsor', s_delete_msg:'Se eliminará «{name}» y su aporte dejará de contarse en la recaudación. Esta acción no se puede deshacer.',
+    s_delete_title:'Dar de baja sponsor', s_delete_msg:'«{name}» saldrá del listado y su aporte dejará de contarse en la recaudación. Sus beneficios dejarán de ofrecerse. Se conservarán sus datos históricos.',
+    s_deactivate:'Dar de baja', s_deactivated_ok:'Sponsor dado de baja',
 
     // ── operativa ──
     o_stores:'Disponibilidad en tiendas', o_platform:'Plataforma', o_version:'Versión', o_available:'Descargable', o_dl:'Descargas', o_updated:'Actualizado', yes:'Sí', no:'No',
@@ -155,7 +156,8 @@ export const T = {
     s_invalid_fee:'Enter a valid monthly fee of zero or more.', s_invalid_benefit:'Complete each benefit name, cost and stock. Cost and stock must be nonnegative integers.',
     s_offered_num:'Number of benefits offered', s_offered_hint:'The edit endpoint only accepts the total, not the list.',
     s_invalid_offered:'Enter a whole number of benefits offered, zero or more.',
-    s_delete_title:'Delete sponsor', s_delete_msg:'“{name}” will be removed and its fee will stop counting toward revenue. This cannot be undone.',
+    s_delete_title:'Deactivate sponsor', s_delete_msg:'“{name}” will leave the list and its fee will stop counting toward revenue. Its benefits will no longer be offered. Historical data will be retained.',
+    s_deactivate:'Deactivate', s_deactivated_ok:'Sponsor deactivated',
 
     o_stores:'Store availability', o_platform:'Platform', o_version:'Version', o_available:'Downloadable', o_dl:'Downloads', o_updated:'Updated', yes:'Yes', no:'No',
     o_services:'Service status', o_uptime:'Uptime', o_latency:'Latency',

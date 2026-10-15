@@ -3,8 +3,8 @@ import { ok, created, noContent, fail } from '../lib/envelope.js';
 import { wrap } from '../middleware/error.js';
 import { requireRole } from '../middleware/auth.js';
 import { adminRoute, bodyObject, text, enumeration, invalid, identifier } from '../lib/admin-validation.js';
-import { COL, listAll, addDoc, deleteDoc, getDoc } from '../data/repo.js';
-import { updateSponsor } from '../data/sponsors.js';
+import { COL, listAll, addDoc } from '../data/repo.js';
+import { updateSponsor, deactivateSponsor } from '../data/sponsors.js';
 
 const r = Router();
 const TIERS = ['Bronze', 'Silver', 'Gold'];
@@ -33,7 +33,7 @@ r.get('/sponsors', requireRole('admin'), wrap(async (req, res) => {
       offset = position.offset;
     } catch { return invalid(); }
   }
-  const rows = await listAll(COL.sponsors);
+  const rows = (await listAll(COL.sponsors)).filter(sponsor => !sponsor.deletedAt);
   rows.sort((a, b) => {
     const left = a[field], right = b[field];
     const order = left === right ? 0 : left == null ? -1 : right == null ? 1 : left < right ? -1 : 1;
@@ -101,10 +101,9 @@ r.patch('/sponsors/:id', requireRole('admin'), adminRoute(async (req, res) => {
   return ok(res, doc);
 }));
 
-r.delete('/sponsors/:id', requireRole('finance'), wrap(async (req, res) => {
-  const doc = await getDoc(COL.sponsors, req.params.id);
-  if (!doc) return fail(res, 404, 'NOT_FOUND', 'Sponsor no encontrado');
-  await deleteDoc(COL.sponsors, req.params.id);
+r.delete('/sponsors/:id', requireRole('admin'), adminRoute(async (req, res) => {
+  const removed = await deactivateSponsor(identifier(req.params.id));
+  if (!removed) return fail(res, 404, 'NOT_FOUND', 'Sponsor no encontrado');
   return noContent(res);
 }));
 

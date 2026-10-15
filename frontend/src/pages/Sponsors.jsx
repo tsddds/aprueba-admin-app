@@ -137,8 +137,8 @@ export default function Sponsors({ ctx }) {
 
       {dialog?.kind === 'delete' && (
         <Confirm danger title={L('s_delete_title')} message={L('s_delete_msg', { name: dialog.sponsor.name })}
-          confirmLabel={L('del')} cancelLabel={L('cancel')} busy={busy} onClose={() => setDialog(null)}
-          onConfirm={() => run(() => api.del(`/sponsors/${dialog.sponsor.id}`), L('deleted_ok'))} />
+          confirmLabel={L('s_deactivate')} cancelLabel={L('cancel')} busy={busy} onClose={() => setDialog(null)}
+          onConfirm={() => run(() => api.del(`/sponsors/${dialog.sponsor.id}`), L('s_deactivated_ok'))} />
       )}
 
       <Toast toast={t.toast} onDone={t.clear} />
