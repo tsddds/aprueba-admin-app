@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { api, qs } from '../api/client.js';
 import { questionOptions, editableOptions } from '../api/question-options.js';
 import QuestionExplanation from '../components/QuestionExplanation.jsx';
+import { parseQuestionImport } from '../api/question-import.js';
 import {
   Kpi, Card, Loading, ErrorBox, EmptyState, Modal, Field, FormGrid, Select,
   Toast, useToast, Pill, Pager,
@@ -102,6 +103,13 @@ export default function Content({ ctx }) {
     else run(() => api.post('/questions', base), L('q_created'));
   };
 
+  const runImport = async (testId, items) => {
+    setBusy(true);
+    try { return (await api.post('/questions/import', { testId, items })).data; }
+    catch (error) { t.err(error.message); return null; }
+    finally { setBusy(false); }
+  };
+
   if (err && !rows) return <Card><ErrorBox msg={err} onRetry={() => load(filters, page)} L={L} /></Card>;
   if (!rows) return <Loading L={L} />;
 
@@ -174,13 +182,7 @@ export default function Content({ ctx }) {
 
       {dialog?.kind === 'import' && (
         <ImportDialog ctx={ctx} busy={busy} tests={[...seen.current.tests]}
-          onClose={() => setDialog(null)}
-          onRun={(testId, items) => run(() => api.post('/questions/import', { testId, items }))
-            .then((res) => {
-              if (!res) return;
-              const d = res.data || {};
-              t.ok(L('q_import_result', { imported: d.imported || 0, skipped: d.skipped || 0, errors: (d.errors || []).length }));
-            })} />
+          onClose={() => { setDialog(null); load(filters, page); }} onRun={runImport} />
       )}
 
       <Toast toast={t.toast} onDone={t.clear} />
@@ -248,13 +250,16 @@ function ImportDialog({ ctx, busy, tests, onClose, onRun }) {
   const [testId, setTestId] = useState('');
   const [text, setText] = useState('');
   const [parseErr, setParseErr] = useState(null);
+  const [result, setResult] = useState(null);
 
-  const submit = () => {
+  const submit = async () => {
     setParseErr(null);
-    let items;
-    try { items = JSON.parse(text); } catch { setParseErr(L('q_import_invalid')); return; }
-    if (!Array.isArray(items)) { setParseErr(L('q_import_invalid')); return; }
-    onRun(testId.trim() || null, items);
+    setResult(null);
+    let payload;
+    try { payload = parseQuestionImport(text, testId); }
+    catch (error) { setParseErr(L(error.message)); return; }
+    const out = await onRun(payload.testId, payload.items);
+    if (out) setResult(out);
   };
 
   const onFile = async (e) => {
@@ -262,32 +267,43 @@ function ImportDialog({ ctx, busy, tests, onClose, onRun }) {
     if (!file) return;
     setText(await file.text());
     setParseErr(null);
+    setResult(null);
   };
 
   let count = null;
-  try { const p = JSON.parse(text); if (Array.isArray(p)) count = p.length; } catch { /* borrador aún inválido */ }
+  try { const p = JSON.parse(text); if (Array.isArray(p)) count = p.length; else if (Array.isArray(p?.items)) count = p.items.length; } catch { /* borrador aún inválido */ }
 
   return (
     <Modal wide busy={busy} title={L('q_import_title')} onClose={onClose}
       footer={<>
         {count != null && <span className="note left">{count} ítems</span>}
-        <button className="btn sec" onClick={onClose} disabled={busy}>{L('cancel')}</button>
+        <button className="btn sec" onClick={onClose} disabled={busy}>{L(result ? 'close' : 'cancel')}</button>
         <button className="btn" onClick={submit} disabled={busy || !text.trim()}>{busy ? '…' : L('q_import_run')}</button>
       </>}>
       <FormGrid>
         <Field label={L('q_import_test')} hint={tests.length ? tests.join(' · ') : undefined}>
-          <input value={testId} onChange={(e) => setTestId(e.target.value)} list="imp-tests" placeholder="m1" />
+          <input value={testId} onChange={(e) => { setTestId(e.target.value); setResult(null); }} list="imp-tests" placeholder="m1" disabled={busy} />
           <datalist id="imp-tests">{tests.map((x) => <option key={x} value={x} />)}</datalist>
         </Field>
         <Field label={L('q_import_file')}>
-          <input type="file" accept=".json,application/json" onChange={onFile} />
+          <input type="file" accept=".json,application/json" onChange={onFile} disabled={busy} />
         </Field>
       </FormGrid>
       <Field wide label="JSON" hint={L('q_import_hint')}>
-        <textarea className="mono" style={{ minHeight: 220 }} value={text} onChange={(e) => setText(e.target.value)}
-          placeholder='[{"pregunta":"…","alternativas":["…"],"respuesta_correcta":"B","eje":"Álgebra","dificultad":"d2"}]' />
+        <textarea className="mono" style={{ minHeight: 220 }} value={text} onChange={(e) => { setText(e.target.value); setResult(null); }} disabled={busy}
+          placeholder='[{"pregunta":"¿Cuánto es 2 + 2?","alternativas":["3","4"],"respuesta_correcta":"B","explicacion_respuesta":"Dos más dos son cuatro.","habilidad_requerida":"Sumar","eje":"Números","dificultad":"d1"}]' />
       </Field>
+      <p className="note">{L('q_import_policy')}</p>
       {parseErr && <div className="err">{parseErr}</div>}
+      {result && (
+        <div role="status" style={{ marginTop: 12 }}>
+          <b>{L('q_import_result', { imported: result.imported, skipped: result.skipped, errors: result.errors.length })}</b>
+          {result.errors.length > 0 && <ul>{result.errors.map(error => (
+            <li key={error.index}>{L('q_import_row', { row: error.index + 1 })}: {error.message} {error.field ? `(${error.field})` : ''} — {error.code}</li>
+          ))}</ul>}
+          {result.duplicates.length > 0 && <p className="note">{L('q_import_duplicates')}: {result.duplicates.map(row => row.index + 1).join(', ')}</p>}
+        </div>
+      )}
     </Modal>
   );
 }

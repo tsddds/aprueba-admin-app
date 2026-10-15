@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import { ok, created, fail } from '../lib/envelope.js';
-import { wrap } from '../middleware/error.js';
 import { requireRole } from '../middleware/auth.js';
 import { COL, listAll, addDoc } from '../data/repo.js';
 import { adminRoute, text, enumeration, invalid, bodyObject, identifier } from '../lib/admin-validation.js';
 import { updateQuestion } from '../data/questions.js';
+import { importQuestions } from '../data/question-import.js';
 import { paginate } from '../lib/admin-pagination.js';
 import { validateQuestion, QUESTION_FIELDS, QUESTION_TESTS, QUESTION_DIFFICULTIES, QUESTION_STATUSES } from '../lib/question-validation.js';
 
@@ -53,21 +53,8 @@ r.put('/questions/:id', requireRole('admin'), adminRoute(async (req, res) => {
 }));
 
 // POST /admin/questions/import — formato de origen (archivos JSON por materia)
-r.post('/questions/import', requireRole('admin'), wrap(async (req, res) => {
-  const { testId, items } = req.body || {};
-  if (!Array.isArray(items)) return fail(res, 400, 'VALIDATION', 'items debe ser un array');
-  let imported = 0; const errors = [];
-  for (const [i, it] of items.entries()) {
-    try {
-      await addDoc(COL.questions, {
-        testId: testId || null, axis: it.eje || it.axis || null, difficulty: it.dificultad || 'd1',
-        statement: it.pregunta, options: it.alternativas, correctAnswer: it.respuesta_correcta,
-        explanation: it.explicacion_respuesta || '', requiredSkill: it.habilidad_requerida || '', status: 'published',
-      });
-      imported++;
-    } catch (e) { errors.push({ index: i, message: e.message }); }
-  }
-  return created(res, { imported, skipped: items.length - imported - errors.length, errors });
+r.post('/questions/import', requireRole('admin'), adminRoute(async (req, res) => {
+  return created(res, await importQuestions(req.body));
 }));
 
 export default r;
