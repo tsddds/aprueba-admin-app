@@ -1,4 +1,9 @@
 // Se permiten huecos finales del formulario, pero nunca se desplazan letras.
+export function editableOptions(values) {
+  if (!Array.isArray(values) || !values.length) return ['', '', '', '', ''];
+  return [...values, ...Array(Math.max(0, 5 - values.length)).fill('')];
+}
+
 export function questionOptions(values, correctAnswer) {
   const options = values.map(value => value.trim());
   while (options.length && options.at(-1) === '') options.pop();

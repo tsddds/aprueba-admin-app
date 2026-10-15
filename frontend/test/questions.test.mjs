@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadAllQuestions } from '../src/api/questions.js';
-import { questionOptions } from '../src/api/question-options.js';
+import { questionOptions, editableOptions } from '../src/api/question-options.js';
 
 test('El catálogo de recorrecciones encuentra preguntas posteriores a la primera página', async () => {
   const calls = [];
@@ -44,4 +44,14 @@ test('La respuesta fuera de opciones no se cambia silenciosamente a A', () => {
   for (const correct of ['E', 'F', '', 'AB']) {
     assert.throws(() => questionOptions(['Una', 'Dos', '', '', ''], correct), /q_err_correct/);
   }
+});
+
+test('La edición de dos alternativas permite añadir hasta E sin alterar las existentes', () => {
+  const saved = ['Tres', 'Cuatro'];
+  const form = editableOptions(saved);
+  assert.deepEqual(form, ['Tres', 'Cuatro', '', '', '']);
+  assert.deepEqual(questionOptions(form, 'B'), saved);
+  form[2] = 'Cinco';
+  assert.deepEqual(questionOptions(form, 'C'), ['Tres', 'Cuatro', 'Cinco']);
+  assert.deepEqual(saved, ['Tres', 'Cuatro']);
 });

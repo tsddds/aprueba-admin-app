@@ -2,10 +2,11 @@ import { Router } from 'express';
 import { ok, created, fail } from '../lib/envelope.js';
 import { wrap } from '../middleware/error.js';
 import { requireRole } from '../middleware/auth.js';
-import { COL, listAll, addDoc, patchDoc, getDoc } from '../data/repo.js';
-import { adminRoute, text, enumeration, invalid } from '../lib/admin-validation.js';
+import { COL, listAll, addDoc } from '../data/repo.js';
+import { adminRoute, text, enumeration, invalid, bodyObject, identifier } from '../lib/admin-validation.js';
+import { updateQuestion } from '../data/questions.js';
 import { paginate } from '../lib/admin-pagination.js';
-import { validateQuestion, QUESTION_TESTS, QUESTION_DIFFICULTIES, QUESTION_STATUSES } from '../lib/question-validation.js';
+import { validateQuestion, QUESTION_FIELDS, QUESTION_TESTS, QUESTION_DIFFICULTIES, QUESTION_STATUSES } from '../lib/question-validation.js';
 
 const r = Router();
 
@@ -42,11 +43,11 @@ r.post('/questions', requireRole('admin'), adminRoute(async (req, res) => {
   return created(res, { id: doc.id, status: doc.status });
 }));
 
-r.put('/questions/:id', requireRole('admin'), wrap(async (req, res) => {
-  const allowed = ['testId', 'axis', 'difficulty', 'statement', 'options', 'correctAnswer', 'explanation', 'requiredSkill', 'status'];
-  const patch = {};
-  for (const k of allowed) if (k in (req.body || {})) patch[k] = req.body[k];
-  const doc = await patchDoc(COL.questions, req.params.id, patch);
+r.put('/questions/:id', requireRole('admin'), adminRoute(async (req, res) => {
+  const id = identifier(req.params.id);
+  const patch = bodyObject(req.body, [...QUESTION_FIELDS, 'status']);
+  if (!Object.keys(patch).length) invalid(null, 'Debe indicar al menos un campo para actualizar');
+  const doc = await updateQuestion(id, patch);
   if (!doc) return fail(res, 404, 'NOT_FOUND', 'Pregunta no encontrada');
   return ok(res, doc);
 }));

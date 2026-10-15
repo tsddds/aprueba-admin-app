@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api, qs } from '../api/client.js';
-import { questionOptions } from '../api/question-options.js';
+import { questionOptions, editableOptions } from '../api/question-options.js';
 import QuestionExplanation from '../components/QuestionExplanation.jsx';
 import {
   Kpi, Card, Loading, ErrorBox, EmptyState, Modal, Field, FormGrid, Select,
@@ -22,7 +22,7 @@ const emptyQuestion = () => ({
 const formFrom = (q) => ({
   testId: q.testId || '', axis: q.axis || '', difficulty: q.difficulty || 'd1',
   statement: q.statement || '',
-  options: (q.options?.length ? [...q.options] : ['', '', '', '', '']),
+  options: editableOptions(q.options),
   correctAnswer: q.correctAnswer || 'A',
   explanation: q.explanation || '', requiredSkill: q.requiredSkill || '',
   status: q.status || 'draft',
