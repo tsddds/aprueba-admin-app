@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { ok, created, noContent, fail } from '../lib/envelope.js';
 import { wrap } from '../middleware/error.js';
 import { requireRole } from '../middleware/auth.js';
+import { adminRoute, bodyObject, text, enumeration, invalid } from '../lib/admin-validation.js';
 import { COL, listAll, addDoc, patchDoc, deleteDoc, getDoc } from '../data/repo.js';
 
 const r = Router();
@@ -45,12 +46,33 @@ r.get('/sponsors', requireRole('admin'), wrap(async (req, res) => {
   return ok(res, result, 200, { pagination: { limit: size, total: rows.length, nextCursor } });
 }));
 
-r.post('/sponsors', requireRole('finance'), wrap(async (req, res) => {
-  const { name, tier, monthlyFee, benefits = [] } = req.body || {};
-  if (!name) return fail(res, 400, 'VALIDATION', 'name es obligatorio');
-  if (tier && !TIERS.includes(tier)) return fail(res, 400, 'VALIDATION', `tier debe ser uno de ${TIERS.join(', ')}`);
+r.post('/sponsors', requireRole('admin'), adminRoute(async (req, res) => {
+  const input = bodyObject(req.body, ['name', 'tier', 'monthlyFee', 'benefits']);
+  const name = text(input.name, 'name');
+  const tier = enumeration(input.tier, 'tier', TIERS);
+  const monthlyFee = input.monthlyFee;
+  if (typeof monthlyFee !== 'number' || !Number.isFinite(monthlyFee) || monthlyFee < 0) invalid('monthlyFee');
+  const source = input.benefits === undefined ? [] : input.benefits;
+  if (!Array.isArray(source)) invalid('benefits');
+  const benefits = source.map((value, i) => {
+    const field = `benefits.${i}`;
+    if (!value || Array.isArray(value) || typeof value !== 'object') invalid(field);
+    for (const key of Object.keys(value)) {
+      if (!['name', 'description', 'costPlatinum', 'stock'].includes(key)) invalid(`${field}.${key}`);
+    }
+    const benefit = { name: text(value.name, `${field}.name`) };
+    if (value.description !== undefined) {
+      if (typeof value.description !== 'string' || value.description.length > 2000) invalid(`${field}.description`);
+      benefit.description = value.description.trim();
+    }
+    for (const key of ['costPlatinum', 'stock']) {
+      if (!Number.isSafeInteger(value[key]) || value[key] < 0) invalid(`${field}.${key}`);
+      benefit[key] = value[key];
+    }
+    return benefit;
+  });
   const doc = await addDoc(COL.sponsors, {
-    name, tier: tier || 'Bronze', monthlyFee: Number(monthlyFee || 0),
+    name, tier, monthlyFee,
     benefitsOffered: benefits.length, benefitsRedeemed: 0, status: 'ok', benefits,
   });
   return created(res, doc);

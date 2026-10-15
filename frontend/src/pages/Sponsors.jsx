@@ -3,7 +3,7 @@ import { api } from '../api/client.js';
 import { loadAllSponsors } from '../api/sponsors.js';
 import {
   Kpi, Card, StatusPill, Loading, HBars, ErrorBox, EmptyState, Modal, Confirm,
-  Field, FormGrid, Select, TagInput, Toast, useToast,
+  Field, FormGrid, Select, Toast, useToast,
 } from '../components/ui.jsx';
 
 // Catálogos del backend (routes/sponsors.js).
@@ -36,12 +36,22 @@ export default function Sponsors({ ctx }) {
 
   const save = (form, sponsor) => {
     if (!form.name.trim()) { t.err(L('required_field')); return; }
+    const fee = Number(form.monthlyFee);
+    if (!sponsor && (form.monthlyFee === '' || !Number.isFinite(fee) || fee < 0)) {
+      t.err(L('s_invalid_fee')); return;
+    }
+    if (!sponsor && form.benefits.some(b => !b.name.trim() ||
+      b.costPlatinum === '' || b.stock === '' ||
+      !Number.isSafeInteger(Number(b.costPlatinum)) || Number(b.costPlatinum) < 0 ||
+      !Number.isSafeInteger(Number(b.stock)) || Number(b.stock) < 0)) {
+      t.err(L('s_invalid_benefit')); return;
+    }
     if (sponsor) {
       // PATCH acepta el total de beneficios, no el listado.
       run(() => api.patch(`/sponsors/${sponsor.id}`, {
         name: form.name.trim(),
         tier: form.tier,
-        monthlyFee: Number(form.monthlyFee || 0),
+        monthlyFee: fee,
         status: form.status,
         benefitsOffered: Number(form.benefitsOffered || 0),
       }), L('saved_ok'));
@@ -50,8 +60,11 @@ export default function Sponsors({ ctx }) {
       run(() => api.post('/sponsors', {
         name: form.name.trim(),
         tier: form.tier,
-        monthlyFee: Number(form.monthlyFee || 0),
-        benefits: form.benefits,
+        monthlyFee: fee,
+        benefits: form.benefits.map(b => ({
+          name: b.name.trim(), description: b.description.trim(),
+          costPlatinum: Number(b.costPlatinum), stock: Number(b.stock),
+        })),
       }), L('created_ok'));
     }
   };
@@ -140,6 +153,9 @@ function SponsorForm({ sponsor, ctx, busy, onClose, onSave }) {
     benefits: sponsor?.benefits || [],
   }));
   const set = (k) => (v) => setF((s) => ({ ...s, [k]: v }));
+  const setBenefit = (index, key, value) => setF(s => ({
+    ...s, benefits: s.benefits.map((benefit, i) => i === index ? { ...benefit, [key]: value } : benefit),
+  }));
 
   return (
     <Modal busy={busy} title={sponsor ? L('s_edit') : L('s_new')} subtitle={sponsor?.id} onClose={onClose}
@@ -148,12 +164,12 @@ function SponsorForm({ sponsor, ctx, busy, onClose, onSave }) {
         <button className="btn" onClick={() => onSave(f, sponsor)} disabled={busy}>{busy ? '…' : (sponsor ? L('save') : L('create'))}</button>
       </>}>
       <FormGrid>
-        <Field wide label={`${L('sp_name')} *`}><input value={f.name} onChange={(e) => set('name')(e.target.value)} /></Field>
-        <Field label={L('sp_tier')}>
+        <Field wide label={`${L('sp_name')} *`}><input maxLength={200} value={f.name} onChange={(e) => set('name')(e.target.value)} /></Field>
+        <Field label={`${L('sp_tier')} *`}>
           <Select value={f.tier} onChange={set('tier')} options={TIERS.map((x) => ({ value: x, label: x }))} />
         </Field>
-        <Field label={`${L('sp_monthly')} (USD)`}>
-          <input type="number" min="0" value={f.monthlyFee} onChange={(e) => set('monthlyFee')(e.target.value)} />
+        <Field label={`${L('sp_monthly')} (CLP) *`}>
+          <input type="number" min="0" step="any" value={f.monthlyFee} onChange={(e) => set('monthlyFee')(e.target.value)} />
         </Field>
         {sponsor ? (
           <>
@@ -166,7 +182,31 @@ function SponsorForm({ sponsor, ctx, busy, onClose, onSave }) {
           </>
         ) : (
           <Field wide label={L('s_benefits')} hint={L('s_benefits_hint')}>
-            <TagInput value={f.benefits} onChange={set('benefits')} placeholder="Descuento 20 %…" />
+            {f.benefits.map((benefit, index) => (
+              <fieldset key={index} style={{ border: '1px solid var(--line)', borderRadius: 10, padding: 12, margin: '0 0 12px', minWidth: 0 }}>
+                <legend>{L('s_benefit')} {index + 1}</legend>
+                <FormGrid>
+                  <Field wide label={`${L('s_benefit_name')} *`}>
+                    <input maxLength={200} value={benefit.name} onChange={e => setBenefit(index, 'name', e.target.value)} />
+                  </Field>
+                  <Field wide label={L('s_benefit_description')}>
+                    <textarea maxLength={2000} value={benefit.description} onChange={e => setBenefit(index, 'description', e.target.value)} />
+                  </Field>
+                  <Field label={`${L('s_benefit_cost')} *`}>
+                    <input type="number" min="0" step="1" value={benefit.costPlatinum} onChange={e => setBenefit(index, 'costPlatinum', e.target.value)} />
+                  </Field>
+                  <Field label={`${L('s_benefit_stock')} *`}>
+                    <input type="number" min="0" step="1" value={benefit.stock} onChange={e => setBenefit(index, 'stock', e.target.value)} />
+                  </Field>
+                </FormGrid>
+                <button type="button" className="btn dgr sm" disabled={busy}
+                  onClick={() => set('benefits')(f.benefits.filter((_, i) => i !== index))}>{L('s_remove_benefit')}</button>
+              </fieldset>
+            ))}
+            <button type="button" className="btn sec sm" disabled={busy}
+              onClick={() => set('benefits')([...f.benefits, { name: '', description: '', costPlatinum: '', stock: '' }])}>
+              + {L('s_add_benefit')}
+            </button>
           </Field>
         )}
       </FormGrid>

@@ -21,7 +21,10 @@ export const T = {
     // ── sponsors ──
     s_intro:'Marcas que financian beneficios para los alumnos.', s_table:'Detalle de sponsors', sp_name:'Sponsor', sp_tier:'Nivel', sp_monthly:'Aporte mensual', sp_offered:'Beneficios ofrecidos', sp_redeemed:'Beneficios cobrados', sp_status:'Estado', s_rev_chart:'Aporte mensual por sponsor', s_add:'Agregar sponsor',
     s_new:'Nuevo sponsor', s_edit:'Editar sponsor', s_no_sponsors:'Todavía no hay sponsors registrados.',
-    s_benefits:'Beneficios ofrecidos', s_benefits_hint:'Escribe un beneficio y pulsa Enter. El total se guarda como «beneficios ofrecidos».',
+    s_benefits:'Beneficios ofrecidos', s_benefits_hint:'Opcionales. Cada beneficio requiere nombre, costo en Platino y stock. Costo y stock deben ser enteros desde cero.',
+    s_benefit:'Beneficio', s_benefit_name:'Nombre', s_benefit_description:'Descripción', s_benefit_cost:'Costo en Platino', s_benefit_stock:'Stock',
+    s_add_benefit:'Agregar beneficio', s_remove_benefit:'Quitar beneficio',
+    s_invalid_fee:'Indica un aporte mensual válido, desde cero.', s_invalid_benefit:'Completa el nombre, costo y stock de cada beneficio. Costo y stock deben ser enteros desde cero.',
     s_offered_num:'N.º de beneficios ofrecidos', s_offered_hint:'El API de edición solo acepta el total, no el listado.',
     s_delete_title:'Eliminar sponsor', s_delete_msg:'Se eliminará «{name}» y su aporte dejará de contarse en la recaudación. Esta acción no se puede deshacer.',
 
@@ -145,7 +148,10 @@ export const T = {
 
     s_intro:'Brands funding student benefits.', s_table:'Sponsor detail', sp_name:'Sponsor', sp_tier:'Tier', sp_monthly:'Monthly fee', sp_offered:'Benefits offered', sp_redeemed:'Benefits redeemed', sp_status:'Status', s_rev_chart:'Monthly fee by sponsor', s_add:'Add sponsor',
     s_new:'New sponsor', s_edit:'Edit sponsor', s_no_sponsors:'No sponsors registered yet.',
-    s_benefits:'Benefits offered', s_benefits_hint:'Type a benefit and press Enter. The count is stored as “benefits offered”.',
+    s_benefits:'Benefits offered', s_benefits_hint:'Optional. Each benefit requires a name, Platinum cost and stock. Cost and stock must be nonnegative integers.',
+    s_benefit:'Benefit', s_benefit_name:'Name', s_benefit_description:'Description', s_benefit_cost:'Platinum cost', s_benefit_stock:'Stock',
+    s_add_benefit:'Add benefit', s_remove_benefit:'Remove benefit',
+    s_invalid_fee:'Enter a valid monthly fee of zero or more.', s_invalid_benefit:'Complete each benefit name, cost and stock. Cost and stock must be nonnegative integers.',
     s_offered_num:'Number of benefits offered', s_offered_hint:'The edit endpoint only accepts the total, not the list.',
     s_delete_title:'Delete sponsor', s_delete_msg:'“{name}” will be removed and its fee will stop counting toward revenue. This cannot be undone.',
 
