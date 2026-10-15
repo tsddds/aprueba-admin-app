@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client.js';
+import { loadAllSponsors } from '../api/sponsors.js';
 import {
   Kpi, Card, StatusPill, Loading, HBars, ErrorBox, EmptyState, Modal, Confirm,
   Field, FormGrid, Select, TagInput, Toast, useToast,
@@ -19,7 +20,7 @@ export default function Sponsors({ ctx }) {
 
   const load = async () => {
     setErr(null);
-    try { setRows((await api.get('/sponsors')).data); } catch (e) { setErr(e.message); }
+    try { setRows(await loadAllSponsors()); } catch (e) { setErr(e.message); }
   };
   useEffect(() => { load(); }, []);
 
