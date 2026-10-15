@@ -1,14 +1,13 @@
 import { Router } from 'express';
-import { ok, fail } from '../lib/envelope.js';
-import { wrap } from '../middleware/error.js';
+import { ok } from '../lib/envelope.js';
 import { requireRole } from '../middleware/auth.js';
-import { COL, listAll, getDoc, patchDoc } from '../data/repo.js';
-import { adminRoute, enumeration, invalid } from '../lib/admin-validation.js';
+import { COL, listAll } from '../data/repo.js';
+import { adminRoute, bodyObject, enumeration, identifier, invalid } from '../lib/admin-validation.js';
 import { paginate } from '../lib/admin-pagination.js';
-import { correctionReferences } from '../data/corrections.js';
+import { correctionReferences, resolveCorrection } from '../data/corrections.js';
+import { QUESTION_FIELDS } from '../lib/question-validation.js';
 
 const r = Router();
-const CONFIRM_REWARD = { tier: 'bronze', amount: 250 };
 
 r.get('/corrections', requireRole('support'), adminRoute(async (req, res) => {
   const query = req.query;
@@ -26,29 +25,16 @@ r.get('/corrections', requireRole('support'), adminRoute(async (req, res) => {
 }));
 
 // PATCH /admin/corrections/:id — confirmar otorga 250 medallas de bronce al alumno
-r.patch('/corrections/:id', requireRole('support'), wrap(async (req, res) => {
-  const { resolution, questionPatch } = req.body || {};
-  if (!['confirmed', 'rejected'].includes(resolution)) {
-    return fail(res, 400, 'VALIDATION', "resolution debe ser 'confirmed' o 'rejected'");
+r.patch('/corrections/:id', requireRole('support'), adminRoute(async (req, res) => {
+  const id = identifier(req.params.id);
+  const body = bodyObject(req.body, ['resolution', 'questionPatch']);
+  enumeration(body.resolution, 'resolution', ['confirmed', 'rejected']);
+  if (body.questionPatch !== undefined) {
+    if (body.resolution !== 'confirmed') invalid('questionPatch', 'Solo se puede corregir una pregunta al confirmar');
+    bodyObject(body.questionPatch, [...QUESTION_FIELDS, 'status']);
+    if (!Object.keys(body.questionPatch).length) invalid('questionPatch');
   }
-  const cor = await getDoc(COL.corrections, req.params.id);
-  if (!cor) return fail(res, 404, 'NOT_FOUND', 'Solicitud no encontrada');
-
-  await patchDoc(COL.corrections, req.params.id, { state: resolution, resolvedBy: req.user.id, resolvedAt: new Date().toISOString() });
-
-  let rewardGranted = null;
-  if (resolution === 'confirmed') {
-    // Otorga recompensa al alumno y, opcionalmente, corrige la pregunta.
-    const user = await getDoc(COL.users, cor.userId);
-    if (user) {
-      await patchDoc(COL.users, cor.userId, { badges: (user.badges || 0) + CONFIRM_REWARD.amount });
-    }
-    if (questionPatch && cor.questionId) {
-      await patchDoc(COL.questions, cor.questionId, questionPatch);
-    }
-    rewardGranted = { userId: cor.userId, ...CONFIRM_REWARD };
-  }
-  return ok(res, { id: req.params.id, state: resolution, rewardGranted });
+  return ok(res, await resolveCorrection(id, req.user.id, body));
 }));
 
 export default r;

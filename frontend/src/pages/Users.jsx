@@ -144,13 +144,23 @@ export default function Users({ ctx }) {
   };
 
   const resolveCorrection = async (cor, body) => {
-    const out = await run(() => api.patch(`/corrections/${cor.id}`, body));
+    const out = await run(async () => {
+      try { return await api.patch(`/corrections/${cor.id}`, body); }
+      catch (e) {
+        if (e.code === 'CORRECTION_ALREADY_RESOLVED') {
+          setDialog(null);
+          setCPage(0);
+          loadCorrections(cFilters, 0);
+        }
+        throw e;
+      }
+    });
     if (!out) return;
     const reward = out.data?.rewardGranted;
     t.ok(reward ? L('co_reward_granted', { n: reward.amount ?? CONFIRM_REWARD }) : L('co_rejected'));
     setCPage(0);
     loadCorrections(cFilters, 0);
-    // Confirmar acredita badges al alumno: refrescamos también la tabla de usuarios.
+    // Refrescar los datos del alumno tras acreditar medallas de bronce.
     if (reward) loadUsers(uFilters, cursors[page]);
   };
 
@@ -376,6 +386,7 @@ function UserDialog({ user, loading, ctx, busy, planOptions, plansUnavailable, o
               <KV k={L('u_id')} v={user.id} />
               <KV k={L('u_country')} v={user.country} />
               <KV k={L('u_badges')} v={`${fmt(user.badges)} 🏅`} />
+              <KV k={L('u_bronze')} v={user.medals?.bronze === undefined ? L('none') : `${fmt(user.medals.bronze)} 🥉`} />
               <KV k={L('u_groups')} v={user.groups ?? 0} />
               <KV k={L('u_last')} v={user.lastActivity} />
               <KV k={L('u_subscription')} v={user.subscription ? `${user.subscription.id} · ${user.subscription.status}` : L('none')} />
@@ -472,8 +483,8 @@ function CorrectionDialog({ correction, question, ctx, busy, onClose, onResolve 
     // El backend solo aplica questionPatch cuando la resolución es 'confirmed'.
     if (resolution === 'confirmed' && fix) {
       const patch = {};
-      if (statement.trim() && statement !== question?.statement) patch.statement = statement.trim();
-      if (correctAnswer.trim() && correctAnswer !== question?.correctAnswer) patch.correctAnswer = correctAnswer.trim().toUpperCase();
+      if (statement !== question?.statement) patch.statement = statement.trim();
+      if (correctAnswer !== question?.correctAnswer) patch.correctAnswer = correctAnswer.trim().toUpperCase();
       if (explanation !== (question?.explanation || '')) patch.explanation = explanation;
       if (Object.keys(patch).length) body.questionPatch = patch;
     }
