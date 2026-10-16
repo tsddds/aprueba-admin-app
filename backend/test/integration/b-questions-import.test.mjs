@@ -62,7 +62,7 @@ test('E22: lote mixto conserva explanation, importa válidas y reporta duplicado
     const structured = created.find(q => q.statement === valid.pregunta);
     assert.deepEqual(structured, {
       id: structured.id, testId: 'm1', axis: 'Álgebra', difficulty: 'd2', statement: valid.pregunta,
-      options: ['No', 'Sí'], correctAnswer: 'B', explanation, requiredSkill: 'Razonar', status: 'published',
+      options: ['No', 'Sí'], correctAnswer: 'B', explanation, requiredSkill: 'Razonar', status: 'draft',
     });
     assert.equal(created.find(q => q.statement === 'Texto compatible').explanation, 'Texto antiguo compatible');
     assert.equal(typeof result.json.meta.requestId, 'string');
@@ -139,12 +139,12 @@ test('E22: filas incompletas, tipos inválidos y campos conflictivos se reportan
   const token = await login();
   await isolated(async () => {
     const before = await rows();
-    const missing = Object.keys(valid).map(key => { const item = { ...valid }; delete item[key]; return item; });
+    const missing = Object.keys(valid).filter(key => !['eje', 'dificultad'].includes(key)).map(key => { const item = { ...valid }; delete item[key]; return item; });
     const items = [null, [], 'texto', 3, {}, ...missing,
       ...['', null, [], 3].map(pregunta => ({ ...valid, pregunta })),
       { ...valid, alternativas: ['Única'] }, { ...valid, respuesta_correcta: 'E' },
       { ...valid, explicacion_respuesta: {} }, { ...valid, explicacion_respuesta: { ...explanation, keyConcept: '' } },
-      { ...valid, dificultad: 'd5' }, { ...valid, eje: '' },
+      { ...valid, dificultad: 'd5' }, { ...valid, eje: 42 },
       { ...valid, axis: 'Otro eje' }, { ...valid, difficulty: 'd4' },
       { ...valid, status: 'draft' }, { ...valid, testId: 'm2' }];
     const data = summary(await request('POST', path, { token, body: { testId: 'm1', items } }), items.length);
@@ -205,5 +205,30 @@ test('E22: acepta 100 filas con conteo exacto de duplicados internos', async () 
     const data = summary(await request('POST', path, { token, body: { testId: 'hist', items } }), 100);
     assert.equal(data.imported, 1); assert.equal(data.skipped, 99);
     assert.equal(data.errors.length, 0);
+  });
+});
+
+
+test('E22: importa incompletas como borrador, permite completarlas por separado y valida al publicar', async () => {
+  const token = await login();
+  await isolated(async () => {
+    const item = { ...valid, pregunta: 'E22 clasificación pendiente' };
+    delete item.eje; delete item.dificultad;
+    assert.equal(summary(await request('POST', path, { token, body: { testId: 'm1', items: [item] } }), 1).imported, 1);
+    const created = (await rows()).find(q => q.statement === item.pregunta);
+    assert.equal(created.status, 'draft'); assert.equal(created.axis, null); assert.equal(created.difficulty, null);
+    const url = '/api/v1/admin/questions/' + created.id;
+    const update = body => request('PUT', url, { token, body });
+    assert.equal((await update({ status: 'published' })).status, 400);
+    assert.equal((await update({ axis: 'Álgebra' })).status, 200);
+    assert.equal((await update({ status: 'published' })).status, 400);
+    let stored = (await rows()).find(q => q.id === created.id);
+    assert.equal(stored.status, 'draft'); assert.equal(stored.difficulty, null);
+    assert.deepEqual(stored.explanation, explanation);
+    assert.equal((await update({ difficulty: 'd2', status: 'published' })).status, 200);
+    assert.equal((await update({ axis: null })).status, 400);
+    stored = (await rows()).find(q => q.id === created.id);
+    assert.equal(stored.status, 'published'); assert.equal(stored.axis, 'Álgebra');
+    assert.equal((await update({ status: 'draft', axis: null, difficulty: null })).status, 200);
   });
 });

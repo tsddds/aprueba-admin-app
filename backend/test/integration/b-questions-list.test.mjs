@@ -20,7 +20,7 @@ test('E19: admin obtiene preguntas persistidas con metadatos y sin alterar datos
   assert.deepEqual(result.json.data, before);
   assert.deepEqual(result.json.meta.pagination, { total: 3, limit: 20, nextCursor: null });
   assert.deepEqual(result.json.meta.summary, { published: 1, draft: 1, tests: 2 });
-  assert.deepEqual(result.json.meta.filters.testIds, ['lectora', 'm1', 'm2', 'cien', 'hist']);
+  assert.deepEqual(result.json.meta.filters.testIds, ['lectora', 'm1', 'm2', 'cien', 'hist', 'b1']);
   assert.deepEqual(result.json.meta.filters.axes, ['Números', 'Álgebra']);
   assert.equal(typeof result.json.meta.requestId, 'string');
   assert.ok(Number.isFinite(Date.parse(result.json.meta.timestamp)));

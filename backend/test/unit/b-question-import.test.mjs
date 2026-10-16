@@ -30,3 +30,22 @@ test('E22: identidad normaliza espacios y Unicode, conserva mayúsculas y separa
   assert.notEqual(questionImportKey({ testId: 'm1', statement: 'Álgebra X' }), key);
   assert.notEqual(questionImportKey({ testId: 'm2', statement: 'Álgebra x' }), key);
 });
+
+
+test('E22: acepta clasificación pendiente sin inventar valores y rechaza valores inválidos', async () => {
+  const saved = [];
+  const variants = [{}, { eje: null, dificultad: null }, { eje: '', dificultad: '  ' }, { axis: null, difficulty: '' }];
+  const items = variants.map((classification, i) => {
+    const item = { ...row, pregunta: 'Pendiente ' + i };
+    delete item.eje; delete item.dificultad;
+    return { ...item, ...classification };
+  });
+  items.push({ ...row, eje: 4 }, { ...row, dificultad: 'd5' });
+  const result = await importQuestionBatch({ testId: 'm1', items }, {
+    readExisting: async () => [],
+    write: async question => { saved.push(question); return { id: 'q_' + saved.length, imported: true }; },
+  });
+  assert.equal(result.imported, 4);
+  assert.deepEqual(result.errors.map(e => e.index), [4, 5]);
+  for (const question of saved) { assert.equal(question.axis, null); assert.equal(question.difficulty, null); }
+});
