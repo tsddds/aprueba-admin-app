@@ -1,5 +1,11 @@
 # Control de Fase 2 Aprueba Administración
 
+## Bloque C de Felipe — 16/10/2026
+
+Rama local `equipo-c/felipe-planes-metricas`, desde `93c8096`. Implementados catálogo/validación de planes, baja según suscripciones y cálculo periódico de métricas; permisos E02/E03 contrastados con Notion y Word original. E26 tiene adaptador Stripe test con idempotencia y pruebas con proveedor simulado: aceptación sandbox real PENDIENTE (Felipe no dispone de cuenta configurada). Detalles, decisiones de datos y límites en [guía C](12_BLOQUE_C_FELIPE.md); revisión asistida de A en [guía 13](13_REVISION_A_PARA_FELIPE.md).
+
+Pruebas Docker: unit15/15, C catálogo7/7, C billing5/5, C métricas7/7, contrato8/8, smoke7/7, A S1 8/8 y A S2 7/7. Frontend compila; Comercial comprobado como finance y constructor visible como admin. Evidencia local en `.local/felipe-evidence/`. No equivale a aceptación académica o cobertura total. Última acción: desarrollo y verificación local. Próxima: revisión humana de C por Catalina, confirmación de acuerdos compartidos y cuenta Stripe test para aceptar E26. Sin publicación, merge o despliegue.
+
 ## Publicación vigente — 03/10/2026
 
 Incremento A publicado y verificado en `origin/equipo-a/backend-sprints`, commit de implementación `07f0f86ab14c43f40c2060de980c3f07d72b1b95`. Base compartida sigue c0bd41f; main sigue fe94dbf. No PR, merge ni despliegue manual. Ver guía10 para revisión. Las notas inferiores y los Excel mantienen su corte de pruebas del29/09: publicación ya realizada, revisión humana y aceptación aún pendientes. Hoy no se repitieron suites runtime ni se verificó el panel de Vercel.

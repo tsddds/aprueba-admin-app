@@ -17,7 +17,7 @@ import Plans from './pages/Plans.jsx';
 // Los roles replican el `requireRole` del backend para no ofrecer pantallas que
 // el API rechazaría con 403 (admin siempre pasa).
 export const VIEWS = [
-  { id: 'resumen', path: '/', ic: '📊', group: 1, roles: ['admin', 'finance', 'ops', 'support'], el: Overview },
+  { id: 'resumen', path: '/', ic: '📊', group: 1, roles: ['admin'], el: Overview },
   { id: 'comercial', path: '/comercial', ic: '💰', group: 1, roles: ['finance'], el: Commercial },
   { id: 'sponsors', path: '/sponsors', ic: '🤝', group: 1, roles: ['admin'], el: Sponsors },
   { id: 'operativa', path: '/operativa', ic: '🛠️', group: 2, roles: ['ops'], el: Operations },
@@ -49,9 +49,10 @@ export default function App() {
 }
 
 function Guard({ view, ctx }) {
-  const { canAccess } = useAuth();
+  const { canAccess, user } = useAuth();
   const loc = useLocation();
   if (!canAccess(view.roles)) {
+    if (view.id === 'resumen') return <Navigate to={user.role==='finance'?'/comercial':user.role==='ops'?'/operativa':'/usuarios'} replace />;
     return <div className="card" style={{ marginTop: 8 }}><b>⛔ {ctx.L('no_access')}</b></div>;
   }
   const El = view.el;

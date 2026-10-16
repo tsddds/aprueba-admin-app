@@ -20,6 +20,11 @@ export default function Overview({ ctx }) {
     } catch (e) { setErr(e.message); }
   };
   useEffect(() => { load(); }, []);
+  useEffect(() => {
+    if (!d) return;
+    const timer = setInterval(load,(d.dashboardPollSeconds || 60)*1000);
+    return () => clearInterval(timer);
+  }, [d?.dashboardPollSeconds]);
 
   if (err) return <Card><ErrorBox msg={err} onRetry={load} L={L} /></Card>;
   if (!d) return <Loading L={L} />;
@@ -32,9 +37,9 @@ export default function Overview({ ctx }) {
     <>
       <div className="grid g4">
         <Kpi ic="⬇️" label={L('k_downloads')} value={fmt(d.downloads?.total)} delta={`${fmt(d.downloads?.month)} ${L('this_month')}`} up />
-        <Kpi ic="👤" label={L('k_mau')} value={fmt(d.mau?.value)} delta={`${d.mau?.deltaPct}% ${L('vs_prev')}`} up />
+        <Kpi ic="👤" label={L('k_mau')} value={fmt(d.mau?.value)} delta={d.mau?.deltaPct == null ? undefined : `${d.mau.deltaPct}% ${L('vs_prev')}`} up />
         <Kpi ic="⭐" label={L('k_converted')} value={fmt(d.converted?.value)} delta={`${d.converted?.rate}% ${L('conv_of_mau')}`} up />
-        <Kpi ic="💰" label={L('k_mrr')} value={`$${fmt(d.mrr?.value)}`} delta={`${d.mrr?.deltaPct}% ${L('vs_prev')}`} up />
+        <Kpi ic="💰" label={L('k_mrr')} value={`$${fmt(d.mrr?.value)}`} delta={d.mrr?.deltaPct == null ? undefined : `${d.mrr.deltaPct}% ${L('vs_prev')}`} up />
       </div>
       <div className="grid g3" style={{ marginTop: 16 }}>
         <Card className="span2">
@@ -50,7 +55,7 @@ export default function Overview({ ctx }) {
         <Card>
           <div className="flex between" style={{ marginBottom: 10 }}>
             <b>{L('health')}</b>
-            <span className={`tag ${down ? 'w' : 'g'}`}>{down ? `${down} ⚠` : L('all_ok')}</span>
+            <span className={`tag ${down || d.systemHealth?.status !== 'ok' ? 'w' : 'g'}`}>{services.length ? (down ? `${down} ⚠` : L('all_ok')) : d.systemHealth?.status === 'ok' ? L('all_ok') : d.systemHealth?.status || 'unknown'}</span>
           </div>
           {services.length === 0 && <div className="note">{d.systemHealth?.status} · {d.systemHealth?.servicesDown} ⚠</div>}
           {services.map((s) => (

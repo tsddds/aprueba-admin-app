@@ -1,6 +1,7 @@
 // Capa de acceso a datos sobre Firestore. Centraliza la lectura/escritura por colección
 // para que las rutas no toquen Firestore directamente.
 import { db, FieldValue } from '../config/firebase.js';
+import { subscriptionBlocksDeletion } from '../services/plans/subscriptions.js';
 
 export const COL = {
   adminUsers: 'adminUsers',
@@ -59,8 +60,8 @@ export async function deleteDoc(col, id) {
 }
 
 export async function countActiveSubscriptions(planId) {
-  const snap = await db.collection(COL.users).where('plan', '==', planId).where('state', '==', 'active').get();
-  return snap.size;
+  const snap = await db.collection('subscriptions').where('plan', '==', planId).get();
+  return snap.docs.filter(doc => subscriptionBlocksDeletion(doc.data())).length;
 }
 
 export { db, FieldValue };

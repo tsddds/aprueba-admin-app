@@ -5,24 +5,25 @@ import { Kpi, Card, Loading, LineChart, Funnel, Bars, HBars, COIN, ErrorBox } fr
 export default function Commercial({ ctx }) {
   const { L, fmt } = ctx;
   const [d, setD] = useState(null);
-  const [ov, setOv] = useState(null);
   const [err, setErr] = useState(null);
 
   const load = async () => {
     setErr(null);
     try {
-      // Se piden juntos para no renderizar con la serie mensual a medias.
-      // La serie vive en el resumen, ya legible por finanzas.
-      const [c, o] = await Promise.all([api.get('/metrics/commercial'), api.get('/metrics/overview')]);
-      setD(c.data); setOv(o.data);
+      setD((await api.get('/metrics/commercial')).data);
     } catch (e) { setErr(e.message); }
   };
   useEffect(() => { load(); }, []);
+  useEffect(() => {
+    if (!d) return;
+    const timer = setInterval(load,(d.dashboardPollSeconds || 60)*1000);
+    return () => clearInterval(timer);
+  }, [d?.dashboardPollSeconds]);
 
   if (err) return <Card><ErrorBox msg={err} onRetry={load} L={L} /></Card>;
-  if (!d || !ov) return <Loading L={L} />;
+  if (!d) return <Loading L={L} />;
 
-  const months = ov?.downloadsByMonth || [];
+  const months = d.downloadsByMonth || [];
   const planColor = { uni: 'var(--brand)', all: 'var(--cta)' };
   const revBars = (d.revenueByPlan || []).map((r) => ({ label: r.plan, value: r.value, color: planColor[r.plan] || 'var(--brand)', disp: '$' + fmt(r.value) }));
   const badgeBars = (d.badgesByType || []).map((b) => ({ label: `${COIN[b.tier]} ${L('tier_' + b.tier)}`, value: b.value, disp: fmt(b.value), color: `var(--${b.tier})` }));

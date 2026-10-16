@@ -25,7 +25,7 @@ export default function Plans({ ctx }) {
   };
   useEffect(() => { load(); }, []);
 
-  const featName = (f) => (lang === 'en' ? f.name_en : f.name_es) || f.name_es;
+  const featName = (f) => (lang === 'en' ? f.name_en : f.name_es) || f.name || f.name_es || f.id;
   const featById = (id) => features.find((f) => f.id === id);
 
   // ── edición local (en memoria hasta guardar) ──
@@ -88,7 +88,7 @@ export default function Plans({ ctx }) {
     } catch (e) { t.err(e.message); } finally { setBusy(false); }
   };
 
-  // El API responde 409 PLAN_HAS_SUBSCRIPTIONS si el plan tiene suscriptores activos.
+  // Código contractual cuando existen suscripciones vigentes.
   const deletePlan = async (plan) => {
     setBusy(true);
     try {
@@ -98,7 +98,7 @@ export default function Plans({ ctx }) {
       t.ok(L('p_deleted'));
     } catch (e) {
       t.err(e.message);
-      if (e.code !== 'PLAN_HAS_SUBSCRIPTIONS') setDialog(null);
+      if (e.code !== 'PLAN_HAS_SUBSCRIBERS') setDialog(null);
     } finally { setBusy(false); }
   };
 

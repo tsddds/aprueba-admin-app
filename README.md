@@ -6,6 +6,9 @@ Conservamos JavaScript, Node.js y Express, Firestore y frontend React/Vite. Alca
 
 ## Leer primero
 
+- [Bloque C de Felipe, pruebas y pendientes de Stripe](docs/12_BLOQUE_C_FELIPE.md).
+- [Revisión asistida del bloque A para Felipe](docs/13_REVISION_A_PARA_FELIPE.md).
+
 - [Punto exacto de avance](docs/00_CONTROL_FASE2.md).
 - [Recepción de la rama compartida y primeras tareas](docs/07_RECEPCION_SPRINT1.md).
 - [Reparto detallado entre los tres](docs/01_REPARTO_EQUIPO.md).
@@ -17,6 +20,8 @@ Conservamos JavaScript, Node.js y Express, Firestore y frontend React/Vite. Alca
 - [Catálogo verificable de los 27 endpoints](docs/endpoints.json).
 
 ## Estado real
+
+**Actualización local — 16/10/2026:** bloque C de Felipe desarrollado en `equipo-c/felipe-planes-metricas` desde `93c8096`. Catálogo/validaciones, baja por suscripciones y métricas periódicas con permisos contractuales; contrato común 8/8. Stripe test tiene adaptador y pruebas simuladas, pero su aceptación en el proveedor sigue pendiente de cuenta/configuración. Revisión humana y publicación pendientes. Ver [guía C](docs/12_BLOQUE_C_FELIPE.md). Los cortes A siguientes conservan sus fechas históricas.
 
 **Publicación confirmada — 03/10/2026:** el incremento A está disponible en `origin/equipo-a/backend-sprints`, commit de implementación `07f0f86`. Código, pruebas, laboratorio y seis Excel publicados; sin merge a main ni despliegue manual. Consultar [recepción y revisión de esta rama](docs/10_RECEPCION_BLOQUE_A.md). El corte técnico/Excel del 29/09 siguiente es histórico: sus menciones a publicación pendiente quedan superadas por esta confirmación; pruebas, revisiones y limitaciones conservan su estado.
 
