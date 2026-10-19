@@ -1,5 +1,9 @@
 # Control de Fase 2 Aprueba Administración
 
+## Publicación y verificación C — 19/10/2026
+
+Felipe solicitó publicar su rama y repetir pruebas. `equipo-c/felipe-planes-metricas` publicada; referencia 8cf0a51 verificada en remoto. Docker iniciado; aplicación disponible para revisión manual en localhost:15173 con datos de desarrollo conservados. Unitarias15/15, catálogo7/7, billing simulado5/5, métricas7/7, contrato8/8 y smoke7/7: 49/49 en esta ejecución. Frontend compila. Evidencias de hoy separadas de las históricas. [Resumen automático](16_PRUEBAS_AUTOMATICAS_C_2026-10-19.md) y [checklist manual sin autoaprobar](15_CHECKLIST_MANUAL_FELIPE.md). Próxima acción: Felipe realiza los casos manuales, Catalina revisa C y se obtiene Stripe sandbox para aceptar E26. Sin merge a main ni PR creado en esta intervención.
+
 ## Bloque C de Felipe — 16/10/2026
 
 Rama local `equipo-c/felipe-planes-metricas`, desde `93c8096`. Implementados catálogo/validación de planes, baja según suscripciones y cálculo periódico de métricas; permisos E02/E03 contrastados con Notion y Word original. E26 tiene adaptador Stripe test con idempotencia y pruebas con proveedor simulado: aceptación sandbox real PENDIENTE (Felipe no dispone de cuenta configurada). Detalles, decisiones de datos y límites en [guía C](12_BLOQUE_C_FELIPE.md); revisión asistida de A en [guía 13](13_REVISION_A_PARA_FELIPE.md).

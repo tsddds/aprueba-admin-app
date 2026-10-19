@@ -6,6 +6,9 @@ Conservamos JavaScript, Node.js y Express, Firestore y frontend React/Vite. Alca
 
 ## Leer primero
 
+- [Checklist manual del bloque C](docs/15_CHECKLIST_MANUAL_FELIPE.md).
+- [Pruebas automáticas C del 19/10/2026](docs/16_PRUEBAS_AUTOMATICAS_C_2026-10-19.md).
+
 - [Bloque C de Felipe, pruebas y pendientes de Stripe](docs/12_BLOQUE_C_FELIPE.md).
 - [Revisión asistida del bloque A para Felipe](docs/13_REVISION_A_PARA_FELIPE.md).
 
@@ -20,6 +23,8 @@ Conservamos JavaScript, Node.js y Express, Firestore y frontend React/Vite. Alca
 - [Catálogo verificable de los 27 endpoints](docs/endpoints.json).
 
 ## Estado real
+
+**Publicación C y nueva ejecución — 19/10/2026:** rama `equipo-c/felipe-planes-metricas` publicada por petición de Felipe; código `8cf0a51` verificado remotamente. Hoy se ejecutaron unitarias, las tres suites C, contrato y smoke: 49/49 aprobadas; frontend compila. Stripe usa simulación en tests, pendiente de aceptación sandbox real. Checklist manual y resumen en guías 15 y 16. Sin merge a main ni despliegue solicitado.
 
 **Actualización local — 16/10/2026:** bloque C de Felipe desarrollado en `equipo-c/felipe-planes-metricas` desde `93c8096`. Catálogo/validaciones, baja por suscripciones y métricas periódicas con permisos contractuales; contrato común 8/8. Stripe test tiene adaptador y pruebas simuladas, pero su aceptación en el proveedor sigue pendiente de cuenta/configuración. Revisión humana y publicación pendientes. Ver [guía C](docs/12_BLOQUE_C_FELIPE.md). Los cortes A siguientes conservan sus fechas históricas.
 
