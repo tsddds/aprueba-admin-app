@@ -1,5 +1,17 @@
 # Control de Fase 2 Aprueba Administración
 
+## Integración y revisión conjunta vigente — 20/10/2026
+
+Descargados los remotos y reunidos A/B/C en la misma carpeta de desarrollo, rama local `codex/integracion-fase2`, código funcional de base `db6c91693ee1368ff7d710a5fa78c3f2ac974f98`. La rama C ya descendía de A `93c8096`, que contiene E18 y los ajustes recientes de importación/b1/navegación de B. Integración fast-forward, sin conflictos ni otro clon. El registro local de seguimiento/documentación puede añadir un commit posterior, sin alterar ese código probado. `origin/main` permanece `fe94dbf`; no se publicó esta rama ni se desplegó.
+
+Regresión nueva: **199/199 ejecuciones de tests aprobadas**, sin skips: B110, C19, A23, smoke7, contrato8, unitarias backend15, helpers frontend15 y configuración Firestore2. Build Vite y arranque Docker aprobados. Son casos de suites con solapamientos, no cobertura de líneas ni aceptación de los 27 endpoints. La comprobación adicional E18 con `note` falla el comportamiento esperado y NO está incluida en esas 199 aprobaciones. Resultados/fechas/comandos/SHA en [evidencias de integración](evidencias/integracion/resultados.json).
+
+Pendientes vigentes: E18 rechaza la nota interna opcional del contrato; E26 requiere aceptación real con Stripe test; texto de importación y clave React de servicios tienen ajustes menores pendientes. Detalle y correcciones propuestas en [pruebas y aceptación](04_PRUEBAS_Y_ACEPTACION.md). No se modificó por nuestra cuenta la implementación funcional de los compañeros.
+
+Aplicación de esta carpeta: http://localhost:5173. API: http://127.0.0.1:4000/health. Visor: http://127.0.0.1:4001/firestore. Conservado el volumen de desarrollo: el seed creó 0 documentos y encontró 45 existentes. Las pruebas restablecen únicamente `demo-aprueba-tests`; no Firebase remoto. Docker operativo incluye solo el contenedor dedicado autorizado, no infraestructura de empresa. Los valores de métricas de una base antigua pueden cambiar por vencimientos y ventana móvil de actividad; no reiniciar datos para forzar 4 MAU/50 %/8000.
+
+Actualizados los seis Excel existentes y sus referencias, conservando rúbricas, fórmulas de revisión humana y fechas históricas. No se autoaprobaron revisiones, ceremonias ni sprints. Próximo: corregir E18 note, completar Stripe test, revisión humana y decidir publicación de integración/PR final, sin push directo a main.
+
 ## Publicación y verificación C — 19/10/2026
 
 Felipe solicitó publicar su rama y repetir pruebas. `equipo-c/felipe-planes-metricas` publicada; referencia 8cf0a51 verificada en remoto. Docker iniciado; aplicación disponible para revisión manual en localhost:15173 con datos de desarrollo conservados. Unitarias15/15, catálogo7/7, billing simulado5/5, métricas7/7, contrato8/8 y smoke7/7: 49/49 en esta ejecución. Frontend compila. Evidencias de hoy separadas de las históricas. [Resumen automático](16_PRUEBAS_AUTOMATICAS_C_2026-10-19.md) y [checklist manual sin autoaprobar](15_CHECKLIST_MANUAL_FELIPE.md). Próxima acción: Felipe realiza los casos manuales, Catalina revisa C y se obtiene Stripe sandbox para aceptar E26. Sin merge a main ni PR creado en esta intervención.

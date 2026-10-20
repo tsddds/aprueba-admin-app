@@ -1,5 +1,13 @@
 # Datos ficticios y acuerdos entre módulos
 
+## Estado integrado — 20/10/2026
+
+A/B/C reunidos en db6c916, sin renombrar IDs ni migrar colecciones fuente. Las notas posteriores de preparación conservan su fecha y no prevalecen sobre este corte. B importa en borrador y permite axis/difficulty nulos hasta clasificar; publicarlos exige ambos. `b1` original es válido. E18 conserva transacción/premio/aviso únicos; sigue pendiente admitir/persistir `note` del contrato.
+
+C ahora recalcula snapshots `metrics/{overview|commercial}-{range}` y los alias de 30d desde registros fuente; usa `appConfig/metrics` para frecuencias, zona y CLP. No confundir snapshots iniciales del seed con cálculo actual. Mantiene `subscriptions.plan` como referencia al ID físico de plan; cambiar `users.plan` por E14 no altera una suscripción ni factura. Nuevas operaciones de precio usan `planPriceOperations/{planId}`, sin cambiar el precio local hasta confirmar el proveedor. Stripe real de pruebas pendiente. Reglas y límites completos en guía12; comprobaciones actuales en guía04.
+
+La base local persistida no se reseteó ni se rejuvenecieron fechas: sus MAU y suscripciones pueden vencer desde septiembre. El oráculo numérico inferior corresponde a fixtures generados en su instante asOf, no a un resultado constante para toda fecha.
+
 Los datos se generan en `backend/dev/fixtures.mjs` y se cargan con `backend/dev/seed.mjs`. No proceden de alumnos/clientes reales. Correos usan example.test; nombres y marcas son ficticios. Las preguntas son ejemplos creados para pruebas. No se usa ni se migra el esquema de los Word descartados.
 
 ## Separación de entornos

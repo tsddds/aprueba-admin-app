@@ -24,6 +24,8 @@ Conservamos JavaScript, Node.js y Express, Firestore y frontend React/Vite. Alca
 
 ## Estado real
 
+**Integración local vigente — 20/10/2026:** A, Catalina y Felipe reunidos en esta misma carpeta en `codex/integracion-fase2`, desde remoto C `db6c916`. Docker arranca y la aplicación está en http://localhost:5173, con visor en http://127.0.0.1:4001/firestore. Regresión conjunta 199/199 y build aprobados; comprobación adicional `note` de E18 reproduce un defecto abierto. Stripe real de pruebas sigue pendiente. Ver [control vigente](docs/00_CONTROL_FASE2.md) y [hallazgos/correcciones](docs/04_PRUEBAS_Y_ACEPTACION.md). Sin cambios a main, push nuevo, despliegue ni carga de Firebase remoto. Los apartados inferiores conservan cortes históricos.
+
 **Publicación C y nueva ejecución — 19/10/2026:** rama `equipo-c/felipe-planes-metricas` publicada por petición de Felipe; código `8cf0a51` verificado remotamente. Hoy se ejecutaron unitarias, las tres suites C, contrato y smoke: 49/49 aprobadas; frontend compila. Stripe usa simulación en tests, pendiente de aceptación sandbox real. Checklist manual y resumen en guías 15 y 16. Sin merge a main ni despliegue solicitado.
 
 **Actualización local — 16/10/2026:** bloque C de Felipe desarrollado en `equipo-c/felipe-planes-metricas` desde `93c8096`. Catálogo/validaciones, baja por suscripciones y métricas periódicas con permisos contractuales; contrato común 8/8. Stripe test tiene adaptador y pruebas simuladas, pero su aceptación en el proveedor sigue pendiente de cuenta/configuración. Revisión humana y publicación pendientes. Ver [guía C](docs/12_BLOQUE_C_FELIPE.md). Los cortes A siguientes conservan sus fechas históricas.

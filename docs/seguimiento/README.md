@@ -1,5 +1,13 @@
 # Seguimiento de ejecución de Fase 2
 
+## Corte vigente — 20/10/2026
+
+Actualizados estos mismos seis Excel después de descargar e integrar localmente A/B/C en `codex/integracion-fase2`, código db6c916. No se creó otro juego de planillas. Los cortes de septiembre inferiores son históricos.
+
+Regresión conjunta199/199 y build aprobado; comandos/resultados en `../evidencias/integracion/resultados.json` y alcance en guía04. Los ocho detectores contractuales originales ahora pasan y sus defectos históricos quedan corregidos/verificados. Nueva incidencia abierta DEF-E18-NOTE: nota interna opcional rechazada400; no queda cubierta por las199aprobaciones. Stripe tiene tests simulados y aceptación real pendiente. Se conservan revisiones humanas pendientes, fechas de línea base, fórmulas y rúbricas; no se inventaron ceremonias ni aceptación académica.
+
+01 mantiene el foco en A y las suites comunes; 02 avance/RAID de los tres; 03 estados técnicos sin reprogramar fechas; 04 trazabilidad según sprints de endpoints.json; 05 inventario integrado local; 06 casos y defectos con E18 note y E26 explícitos. Para el detalle menor de interfaz y próxima acción, guía04. Verificación de exportación, fórmulas y vistas modificadas con herramienta de planillas; no apertura en Microsoft Excel nativo. Originales V2/V3 y académicos intactos. Integración aún sin push ni despliegue.
+
 **Publicación 03/10/2026:** los seis Excel están incluidos en la rama `equipo-a/backend-sprints`, implementación `07f0f86`. Sus celdas de publicación pendiente son una fotografía del corte29/09, no el estado actual de GitHub. Se conservan sin retrofechar ni alterar pruebas/revisiones. La publicación no implica aceptación o cierre de sprint.
 
 Corte: 29/09/2026, bloque A de Tsung-Hao. Estos son archivos de ejecución nuevos derivados de las plantillas V3; los originales académicos, V2 y V3 permanecen intactos. No sustituir rúbricas docentes ni copiar sus notas predeterminadas.

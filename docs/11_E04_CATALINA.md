@@ -2,6 +2,12 @@
 
 Fecha: 14 de octubre de 2026. Bloque B: Catalina; implementación con asistencia de Codex.
 
+## Corte vigente de recepción B — 20/10/2026
+
+La preparación E04 inferior es histórica. Se descargó B completo, incluidos E17/E18 y ajustes E22 (borradores/clasificación pendiente y b1) y navegación Sponsors solo admin. Los cambios están contenidos en A remoto93c8096 y C remoto db6c916, reunidos localmente en `codex/integracion-fase2` en la carpeta principal. No hay que rehacer diez ramas. API GitHub: PR1 merged a A; PR2–10 cerrados sin merge individual, sin que eso elimine el código incorporado por la ascendencia.
+
+Verificación nueva: diez suites B110/110 y regresión conjunta199/199. Pendiente funcional: `note` opcional de E18 se rechaza400 y no se persiste. Ajuste menor: `q_intro` todavía promete importar publicadas aunque se guardan borradores. Antes de aceptación final, corregir y verificar esos puntos, revisión humana y validación grupal. Detalles y evidencia en [guía04](04_PRUEBAS_Y_ACEPTACION.md). No se atribuyen a Catalina los antiguos tres defectos C, cuyos detectores ahora pasan con la implementación de Felipe.
+
 ## Base y alcance
 
 Rama personal local `equipo-b/e04-sponsors`, creada desde `equipo-a/backend-sprints` en `f31cec908a7b8d71d8204ce59bed03039477571f`. Conserva el historial remoto. No se modificaron las rutas de A/C ni se copió el middleware antiguo sobre los controles nuevos de A. No hay push ni PR.
