@@ -1,5 +1,15 @@
 # Control de Fase 2 Aprueba Administración
 
+## Rama integrada para compartir — 20/10/2026
+
+Publicación solicitada por Tsung-Hao en `codex/integracion-fase2` del repositorio `tsddds/aprueba-admin-app`, sin fusionar con `main`. Esta rama reúne A `93c8096`, C `db6c916`, el registro conjunto `aef22bf` y el informe final de B `8694edb`. El informe de B añade únicamente `docs/17_BLOQUE_B_CATALINA_PRUEBAS.md`: no cambia las funciones ya integradas ni corrige por sí solo la nota opcional de E18.
+
+Para recibir el código conjunto, guardar primero los cambios propios, ejecutar `git fetch origin` y seleccionar `codex/integracion-fase2`. Si aún no existe localmente: `git switch --track origin/codex/integracion-fase2`; si ya existe: `git switch codex/integracion-fase2` y `git pull --ff-only`. Crear después una rama de trabajo propia. No usar `reset --hard` ni sobrescribir cambios de compañeros. Seguir el README para iniciar Docker sin eliminar volúmenes ni cargar credenciales de nube.
+
+Las evidencias conjuntas siguen siendo las registradas en `docs/evidencias/integracion/`: 199 ejecuciones aprobadas y build, no cobertura completa ni aceptación de los 27 endpoints. El corte posterior de preparación de la presentación conservó además un primer timeout concurrente y su reintento aprobado sin modificar código; no se considera causa resuelta. Esta publicación no supone una nueva ejecución completa de pruebas ni un despliegue. Pendientes: E18 `note`, aceptación externa de Stripe test, revisión del timeout, periodicidad remota y aceptación humana.
+
+La comprobación de publicación debe hacerse comparando el SHA de `git rev-parse HEAD` con `git ls-remote origin refs/heads/codex/integracion-fase2`. Los apartados inferiores son cortes históricos; sus referencias a rama exclusivamente local no describen la publicación solicitada aquí.
+
 ## Integración y revisión conjunta vigente — 20/10/2026
 
 Descargados los remotos y reunidos A/B/C en la misma carpeta de desarrollo, rama local `codex/integracion-fase2`, código funcional de base `db6c91693ee1368ff7d710a5fa78c3f2ac974f98`. La rama C ya descendía de A `93c8096`, que contiene E18 y los ajustes recientes de importación/b1/navegación de B. Integración fast-forward, sin conflictos ni otro clon. El registro local de seguimiento/documentación puede añadir un commit posterior, sin alterar ese código probado. `origin/main` permanece `fe94dbf`; no se publicó esta rama ni se desplegó.

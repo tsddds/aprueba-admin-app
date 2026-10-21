@@ -24,6 +24,8 @@ Conservamos JavaScript, Node.js y Express, Firestore y frontend React/Vite. Alca
 
 ## Estado real
 
+**Rama conjunta para compartir — 20/10/2026:** descargar `codex/integracion-fase2` para recibir el código reunido de Tsung-Hao, Catalina y Felipe, las pruebas y el seguimiento. Incluye el informe final de Catalina en [bloque B](docs/17_BLOQUE_B_CATALINA_PRUEBAS.md), añadido sin cambios funcionales. Se conserva `main`; publicar esta rama no implica desplegarla ni dar por resueltos E18 `note`, Stripe test o el timeout concurrente observado en una repetición posterior. Ver instrucciones y límites en [control vigente](docs/00_CONTROL_FASE2.md). Los párrafos siguientes mantienen el estado de cada corte histórico.
+
 **Integración local vigente — 20/10/2026:** A, Catalina y Felipe reunidos en esta misma carpeta en `codex/integracion-fase2`, desde remoto C `db6c916`. Docker arranca y la aplicación está en http://localhost:5173, con visor en http://127.0.0.1:4001/firestore. Regresión conjunta 199/199 y build aprobados; comprobación adicional `note` de E18 reproduce un defecto abierto. Stripe real de pruebas sigue pendiente. Ver [control vigente](docs/00_CONTROL_FASE2.md) y [hallazgos/correcciones](docs/04_PRUEBAS_Y_ACEPTACION.md). Sin cambios a main, push nuevo, despliegue ni carga de Firebase remoto. Los apartados inferiores conservan cortes históricos.
 
 **Publicación C y nueva ejecución — 19/10/2026:** rama `equipo-c/felipe-planes-metricas` publicada por petición de Felipe; código `8cf0a51` verificado remotamente. Hoy se ejecutaron unitarias, las tres suites C, contrato y smoke: 49/49 aprobadas; frontend compila. Stripe usa simulación en tests, pendiente de aceptación sandbox real. Checklist manual y resumen en guías 15 y 16. Sin merge a main ni despliegue solicitado.
@@ -46,7 +48,7 @@ No cargar claves Firebase, JWT de Vercel, Stripe ni `.env` real. El entorno usa 
 
 ## Primer arranque
 
-Usar la rama `codex/base-fase2-equipo`, no main: comandos en guía 07. La publicación se confirma por la existencia de esa rama remota; no se requiere integrar en main para descargar y revisar el paquete.
+Para el código integrado de los tres, usar `codex/integracion-fase2`, no `main` ni la base histórica `codex/base-fase2-equipo`. Con cambios propios guardados: `git fetch origin` y `git switch --track origin/codex/integracion-fase2` si aún no existe localmente. Si ya existe, `git switch codex/integracion-fase2` y `git pull --ff-only`. No se requiere integrar en `main` para descargar y revisar el conjunto. La guía07 conserva los pasos de recepción de la base original.
 
 Cada integrante obtiene esa rama del MISMO repositorio privado y abre la raíz de su copia en VS Code. Con Docker instalado y abierto, en ese terminal:
 
